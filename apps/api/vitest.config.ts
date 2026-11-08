@@ -1,0 +1,18 @@
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  resolve: {
+    preserveSymlinks: true,
+  },
+  test: {
+    globals: true,
+    environment: 'node',
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
+    testTimeout: 20000,
+  },
+});
