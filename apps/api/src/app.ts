@@ -3,6 +3,9 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import swaggerUi from 'swagger-ui-express';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 import { config } from './config/index.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { generalApiRateLimiter } from './middleware/rateLimiter.js';
@@ -92,6 +95,25 @@ export function createApp(): express.Application {
   app.use('/api/v1/users', userRoutes);
   app.use('/api/v1/audit-logs', auditRoutes);
   app.use('/api/v1/health', healthRoutes);
+
+  // Serve frontend static build in production if present
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const webDistPath = path.resolve(__dirname, '../../web/dist');
+
+  if (fs.existsSync(webDistPath)) {
+    app.use(express.static(webDistPath));
+    app.get('*', (req, res, next) => {
+      if (
+        req.path.startsWith('/api') ||
+        req.path.startsWith('/api-docs') ||
+        req.path.startsWith('/socket.io')
+      ) {
+        return next();
+      }
+      res.sendFile(path.join(webDistPath, 'index.html'));
+    });
+  }
 
   // Global Error Handler
   app.use(errorHandler);
