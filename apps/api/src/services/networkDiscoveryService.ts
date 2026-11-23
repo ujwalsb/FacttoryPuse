@@ -55,6 +55,11 @@ const MAC_OUI_DATABASE: Array<{
   protocol: IndustrialProtocol;
   port: number;
 }> = [
+  { prefix: '00:07:4F', vendor: 'Advantech Co., Ltd.', category: 'Industrial IoT Digital I/O Gateway', model: 'WISE-4051 IoT Wireless I/O Module', protocol: IndustrialProtocol.WISE_4051, port: 80 },
+  { prefix: '74:FE:48', vendor: 'Advantech Co., Ltd.', category: 'Industrial Embedded Controller', model: 'WISE-4051 Wireless I/O Node', protocol: IndustrialProtocol.WISE_4051, port: 80 },
+  { prefix: '00:D0:C9', vendor: 'Advantech Co., Ltd.', category: 'Industrial Automation Node', model: 'ADAM-6000 Series Ethernet I/O', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+  { prefix: '00:90:E8', vendor: 'Moxa Inc.', category: 'Industrial Edge Gateway', model: 'Moxa UC-8200 Industrial IoT Gateway', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+  { prefix: '00:02:D1', vendor: 'Moxa Inc.', category: 'Serial Device Server', model: 'Moxa NPort 5150A Device Server', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
   { prefix: '00:1B:1B', vendor: 'Siemens AG', category: 'PLC Automation Controller', model: 'SIMATIC S7-1500 CPU 1516-3 PN/DP', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
   { prefix: '00:0E:8C', vendor: 'Siemens AG', category: 'Compact PLC Controller', model: 'SIMATIC S7-1200 CPU 1214C', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
   { prefix: '08:00:06', vendor: 'Siemens AG', category: 'Distributed I/O Station', model: 'SIMATIC ET 200SP Interface Module', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
@@ -79,7 +84,11 @@ const MAC_OUI_DATABASE: Array<{
   { prefix: 'C0:25:2F', vendor: 'Industrial Connected Node', category: 'Connected OT Sensor', model: 'IoT Smart Edge Node', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
   { prefix: 'F2:17:E6', vendor: 'Industrial OT Gateway', category: 'Plant Network Switch', model: 'Managed OT Subnet Gateway', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
   { prefix: 'B8:27:EB', vendor: 'Raspberry Pi Foundation', category: 'Edge IoT Gateway', model: 'Compute Module 4 Modbus Edge', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: 'DC:A6:32', vendor: 'Raspberry Pi Foundation', category: 'Edge IoT Gateway', model: 'Raspberry Pi 4 OT Poller', protocol: IndustrialProtocol.MQTT, port: 1883 }
+  { prefix: 'DC:A6:32', vendor: 'Raspberry Pi Foundation', category: 'Edge IoT Gateway', model: 'Raspberry Pi 4 OT Poller', protocol: IndustrialProtocol.MQTT, port: 1883 },
+  { prefix: 'E4:5F:01', vendor: 'Raspberry Pi Foundation', category: 'Edge IoT Gateway', model: 'Raspberry Pi 4 Industrial Node', protocol: IndustrialProtocol.MQTT, port: 1883 },
+  { prefix: '4A:29:13', vendor: 'Industrial Network Gateway', category: 'OT Subnet Router', model: 'Managed Industrial Gateway Hub', protocol: IndustrialProtocol.MODBUS_TCP, port: 53 },
+  { prefix: '4A:8B:D9', vendor: 'Connected OT Device', category: 'Smart Factory Sensor', model: 'Wireless IoT Field Station', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+  { prefix: '5C:D0:6E', vendor: 'Industrial Connected Device', category: 'Connected Machine Node', model: 'OT Floor Connected Terminal', protocol: IndustrialProtocol.MODBUS_TCP, port: 80 }
 ];
 
 export class NetworkDiscoveryService {
@@ -133,10 +142,14 @@ export class NetworkDiscoveryService {
       const seenIps = new Set<string>();
 
       for (const line of lines) {
-        const match = line.match(/^\s*(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+([0-9a-fA-F-]{17})\s+(\w+)/);
+        // Robust regex matching both Windows (hyphen) and Linux/Unix (colon) ARP table formats
+        const match = line.match(/\s*(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+([0-9a-fA-F:-]{11,17})\s+(\w+)?/);
         if (match) {
           const ip = match[1];
-          const mac = match[2].replace(/-/g, ':').toUpperCase();
+          const rawMac = match[2].replace(/-/g, ':').toUpperCase();
+          const macParts = rawMac.split(':');
+          if (macParts.length !== 6) continue;
+          const mac = macParts.map(p => p.padStart(2, '0')).join(':');
 
           // Exclude multicast and broadcast addresses
           const firstOctet = parseInt(ip.split('.')[0], 10);
@@ -146,7 +159,7 @@ export class NetworkDiscoveryService {
 
           if (!isMulticast && !isBroadcast && !isBroadcastMac && !seenIps.has(ip)) {
             seenIps.add(ip);
-            entries.push({ ip, mac, type: match[3] });
+            entries.push({ ip, mac, type: match[3] || 'dynamic' });
           }
         }
       }
@@ -158,9 +171,39 @@ export class NetworkDiscoveryService {
   }
 
   /**
-   * Tests single TCP port connectivity with fast timeout
+   * Performs real ICMP ping test with latency measurement
    */
-  static async testPort(ip: string, port: number, timeoutMs = 250): Promise<{ open: boolean; latencyMs: number }> {
+  static async pingHost(ip: string, timeoutMs = 350): Promise<{ alive: boolean; latencyMs: number }> {
+    try {
+      const isWin = os.platform() === 'win32';
+      const pingCmd = isWin ? `ping -n 1 -w ${timeoutMs} ${ip}` : `ping -c 1 -W 1 ${ip}`;
+      const { stdout } = await execAsync(pingCmd);
+      if (
+        (stdout.includes('Reply from') || stdout.includes('bytes from')) &&
+        !stdout.includes('unreachable') &&
+        !stdout.includes('timed out')
+      ) {
+        let latencyMs = 3;
+        const timeMatch = stdout.match(/time[=<]([0-9]+)ms/i);
+        if (timeMatch) {
+          latencyMs = Math.max(1, parseInt(timeMatch[1], 10));
+        }
+        return { alive: true, latencyMs };
+      }
+      return { alive: false, latencyMs: 0 };
+    } catch {
+      return { alive: false, latencyMs: 0 };
+    }
+  }
+
+  /**
+   * Tests single TCP port connectivity with fast timeout and RST alive detection
+   */
+  static async testPort(
+    ip: string,
+    port: number,
+    timeoutMs = 250
+  ): Promise<{ open: boolean; alive: boolean; latencyMs: number; error?: string }> {
     return new Promise((resolve) => {
       const start = Date.now();
       const socket = new net.Socket();
@@ -169,25 +212,80 @@ export class NetworkDiscoveryService {
       socket.on('connect', () => {
         const latencyMs = Math.max(1, Date.now() - start);
         socket.destroy();
-        resolve({ open: true, latencyMs });
+        resolve({ open: true, alive: true, latencyMs });
       });
 
       socket.on('timeout', () => {
         socket.destroy();
-        resolve({ open: false, latencyMs: timeoutMs });
+        resolve({ open: false, alive: false, latencyMs: timeoutMs });
       });
 
-      socket.on('error', () => {
+      socket.on('error', (err: any) => {
         socket.destroy();
-        resolve({ open: false, latencyMs: Date.now() - start });
+        const latencyMs = Math.max(1, Date.now() - start);
+        // ECONNREFUSED means the target IP is ALIVE on the network and actively replied with a TCP RST!
+        const isAlive = err?.code === 'ECONNREFUSED';
+        resolve({ open: false, alive: isAlive, latencyMs, error: err?.code });
       });
 
       try {
         socket.connect(port, ip);
-      } catch {
-        resolve({ open: false, latencyMs: 0 });
+      } catch (err: any) {
+        resolve({ open: false, alive: false, latencyMs: 0, error: err?.message });
       }
     });
+  }
+
+  /**
+   * Actively sweeps a subnet (e.g. 10.242.174.0/24 or 192.168.1.0/24) to discover all live devices
+   */
+  static async sweepSubnet(subnet: string, timeoutMs = 150): Promise<string[]> {
+    try {
+      const match = subnet.match(/^(\d{1,3}\.\d{1,3}\.\d{1,3})\./);
+      if (!match) return [];
+      const basePrefix = match[1] + '.';
+
+      const candidateIps: string[] = [];
+      for (let i = 1; i <= 254; i++) {
+        candidateIps.push(`${basePrefix}${i}`);
+      }
+
+      const aliveIps: string[] = [];
+      const isWin = os.platform() === 'win32';
+      const chunkSize = 32;
+
+      for (let i = 0; i < candidateIps.length; i += chunkSize) {
+        const chunk = candidateIps.slice(i, i + chunkSize);
+        await Promise.all(
+          chunk.map(async (ip) => {
+            // Fast ping check
+            try {
+              const pingCmd = isWin ? `ping -n 1 -w ${timeoutMs} ${ip}` : `ping -c 1 -W 1 ${ip}`;
+              const { stdout } = await execAsync(pingCmd);
+              if (
+                (stdout.includes('Reply from') || stdout.includes('bytes from')) &&
+                !stdout.includes('unreachable') &&
+                !stdout.includes('timed out')
+              ) {
+                aliveIps.push(ip);
+                return;
+              }
+            } catch {}
+
+            // Fast TCP socket fallback check
+            const tcpCheck = await this.testPort(ip, 80, timeoutMs);
+            if (tcpCheck.alive) {
+              aliveIps.push(ip);
+            }
+          })
+        );
+      }
+
+      return aliveIps;
+    } catch (err) {
+      logger.warn({ err }, 'Subnet sweep encountered error');
+      return [];
+    }
   }
 
   /**
@@ -200,16 +298,17 @@ export class NetworkDiscoveryService {
     latencyMs: number;
     isReachable: boolean;
   }> {
-    const candidatePorts = [502, 4840, 1883, 102, 44818, 80, 8080, 22];
+    const candidatePorts = [502, 80, 4840, 1883, 8080, 102, 44818, 53, 22, 443];
     const results = await Promise.all(
       candidatePorts.map(async (port) => {
-        const res = await this.testPort(ip, port, 200);
+        const res = await this.testPort(ip, port, 250);
         return { port, ...res };
       })
     );
 
     const openResults = results.filter(r => r.open);
     const openPorts = openResults.map(r => r.port);
+    const anyAlive = results.some(r => r.alive);
 
     if (openPorts.length > 0) {
       const minLatency = Math.min(...openResults.map(r => r.latencyMs));
@@ -225,11 +324,11 @@ export class NetworkDiscoveryService {
       } else if (openPorts.includes(1883)) {
         primaryPort = 1883;
         protocol = IndustrialProtocol.MQTT;
-      } else if (openPorts.includes(102)) {
-        primaryPort = 102;
-        protocol = IndustrialProtocol.MODBUS_TCP;
-      } else if (openPorts.includes(44818)) {
-        primaryPort = 44818;
+      } else if (openPorts.includes(80) || openPorts.includes(8080)) {
+        primaryPort = openPorts.includes(80) ? 80 : 8080;
+        protocol = IndustrialProtocol.WISE_4051;
+      } else if (openPorts.includes(102) || openPorts.includes(44818)) {
+        primaryPort = openPorts.includes(102) ? 102 : 44818;
         protocol = IndustrialProtocol.MODBUS_TCP;
       } else {
         primaryPort = openPorts[0];
@@ -245,13 +344,25 @@ export class NetworkDiscoveryService {
       };
     }
 
-    // If none of those standard ports are open, calculate latency using quick TCP probe
+    // If no candidate port is open, test ICMP ping
+    const ping = await this.pingHost(ip, 350);
+    if (ping.alive || anyAlive) {
+      return {
+        openPorts: [],
+        primaryPort: 502,
+        protocol: IndustrialProtocol.MODBUS_TCP,
+        latencyMs: ping.latencyMs || 4,
+        isReachable: true
+      };
+    }
+
+    // Completely unreachable
     return {
       openPorts: [],
       primaryPort: 502,
       protocol: IndustrialProtocol.MODBUS_TCP,
-      latencyMs: Math.floor(1 + Math.random() * 4),
-      isReachable: true
+      latencyMs: 0,
+      isReachable: false
     };
   }
 
@@ -392,65 +503,57 @@ export class NetworkDiscoveryService {
 
     // 1. Gather Real Candidate IPs connected to this machine
     if (mode === 'real' || mode === 'hybrid') {
-      // Real interfaces on host
-      for (const iface of interfaces) {
-        if (!discoveredIpSet.has(iface.ip)) {
-          discoveredIpSet.add(iface.ip);
-          const probe = await this.probeIpPorts(iface.ip);
-          const info = this.resolveDeviceInfo(iface.mac, iface.ip, probe.protocol, probe.primaryPort);
-
-          discoveredDevices.push({
-            deviceId: `REAL-HOST-${iface.ip.replace(/\./g, '-')}`,
-            vendor: `${info.vendor} (Host Interface)`,
-            modelNumber: `${iface.name}: ${info.modelNumber}`,
-            category: 'Industrial Edge Host Adapter',
-            serialNumber: `SN-HOST-${iface.ip.replace(/\./g, '')}`,
-            macAddress: iface.mac || '00:00:00:00:00:00',
-            firmware: 'Host OS Network Stack',
-            ipAddress: iface.ip,
-            port: probe.primaryPort,
-            openPorts: probe.openPorts,
-            protocol: probe.protocol,
-            latencyMs: probe.latencyMs,
-            detectedAt: new Date().toISOString(),
-            suggestedCycleTime: info.suggestedCycleTime,
-            suggestedCapacity: info.suggestedCapacity,
-            isRealDevice: true,
-            interfaceName: iface.name,
-            detectedTags: this.getProtocolTags(probe.protocol, probe.primaryPort)
-          });
-        }
+      // Actively sweep the target subnet to discover live devices
+      const aliveFromSweep = await this.sweepSubnet(effectiveSubnet, 150);
+      for (const ip of aliveFromSweep) {
+        discoveredIpSet.add(ip);
       }
 
-      // Real active devices connected from the ARP table
+      // Re-read ARP table after sweep has forced kernel ARP caching
       const arpEntries = await this.getArpEntries();
       for (const entry of arpEntries) {
-        if (!discoveredIpSet.has(entry.ip)) {
-          discoveredIpSet.add(entry.ip);
-          const probe = await this.probeIpPorts(entry.ip);
-          const info = this.resolveDeviceInfo(entry.mac, entry.ip, probe.protocol, probe.primaryPort);
+        discoveredIpSet.add(entry.ip);
+      }
 
-          discoveredDevices.push({
-            deviceId: `REAL-DEV-${entry.ip.replace(/\./g, '-')}`,
-            vendor: info.vendor,
-            modelNumber: info.modelNumber,
-            category: info.category,
-            serialNumber: `SN-REAL-${entry.ip.replace(/\./g, '')}`,
-            macAddress: entry.mac,
-            firmware: info.firmware,
-            ipAddress: entry.ip,
-            port: probe.primaryPort,
-            openPorts: probe.openPorts,
-            protocol: probe.protocol,
-            latencyMs: probe.latencyMs,
-            detectedAt: new Date().toISOString(),
-            suggestedCycleTime: info.suggestedCycleTime,
-            suggestedCapacity: info.suggestedCapacity,
-            isRealDevice: true,
-            interfaceName: currentInterface?.name || 'Local Subnet',
-            detectedTags: this.getProtocolTags(probe.protocol, probe.primaryPort)
-          });
+      // Also include active host interfaces for visibility
+      for (const iface of interfaces) {
+        discoveredIpSet.add(iface.ip);
+      }
+
+      // Probe each discovered real IP
+      for (const ip of discoveredIpSet) {
+        const ifaceMatch = interfaces.find(i => i.ip === ip);
+        const arpMatch = arpEntries.find(a => a.ip === ip);
+        const mac = arpMatch ? arpMatch.mac : (ifaceMatch?.mac || '00:00:00:00:00:00');
+
+        const probe = await this.probeIpPorts(ip);
+        if (!probe.isReachable && !ifaceMatch) {
+          // If completely unreachable and not a local host interface, skip it
+          continue;
         }
+
+        const info = this.resolveDeviceInfo(mac, ip, probe.protocol, probe.primaryPort);
+
+        discoveredDevices.push({
+          deviceId: ifaceMatch ? `REAL-HOST-${ip.replace(/\./g, '-')}` : `REAL-DEV-${ip.replace(/\./g, '-')}`,
+          vendor: ifaceMatch ? `${info.vendor} (Host Interface)` : info.vendor,
+          modelNumber: ifaceMatch ? `${ifaceMatch.name}: ${info.modelNumber}` : info.modelNumber,
+          category: ifaceMatch ? 'Industrial Edge Host Adapter' : info.category,
+          serialNumber: `SN-REAL-${ip.replace(/\./g, '')}`,
+          macAddress: mac,
+          firmware: info.firmware,
+          ipAddress: ip,
+          port: probe.primaryPort,
+          openPorts: probe.openPorts,
+          protocol: probe.protocol,
+          latencyMs: probe.latencyMs,
+          detectedAt: new Date().toISOString(),
+          suggestedCycleTime: info.suggestedCycleTime,
+          suggestedCapacity: info.suggestedCapacity,
+          isRealDevice: true,
+          interfaceName: ifaceMatch?.name || currentInterface?.name || 'Local Subnet',
+          detectedTags: this.getProtocolTags(probe.protocol, probe.primaryPort)
+        });
       }
     }
 

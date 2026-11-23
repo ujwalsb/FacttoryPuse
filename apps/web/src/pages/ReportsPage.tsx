@@ -40,16 +40,20 @@ export const ReportsPage: React.FC = () => {
   const handleDownloadCsv = async (type: 'production' | 'alerts') => {
     try {
       const token = api.getToken();
-      const tenantHeader = user?.tenantId ? `&tenantId=${user.tenantId}` : '';
+      const activeTenant = api.getSelectedTenantId() || user?.tenantId;
       const endpoint = type === 'production'
         ? '/api/v1/reports/export/production.csv'
         : '/api/v1/reports/export/alerts.csv';
 
-      const response = await fetch(`${endpoint}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      if (activeTenant) headers['x-tenant-id'] = activeTenant;
+
+      const response = await fetch(endpoint, { headers });
+      if (!response.ok) {
+        const errJson = await response.json().catch(() => ({}));
+        throw new Error(errJson.error || `Export failed with HTTP ${response.status}`);
+      }
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -59,8 +63,9 @@ export const ReportsPage: React.FC = () => {
       document.body.appendChild(a);
       a.click();
       a.remove();
-    } catch (err) {
-      alert('Failed to download report export');
+      window.URL.revokeObjectURL(url);
+    } catch (err: any) {
+      alert(err.message || 'Failed to download report export');
     }
   };
 

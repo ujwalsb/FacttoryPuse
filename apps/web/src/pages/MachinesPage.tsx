@@ -119,7 +119,7 @@ export const MachinesPage: React.FC = () => {
   const [directProbeIp, setDirectProbeIp] = useState<string>('');
   const [directProbePort, setDirectProbePort] = useState<number>(502);
   const [isDirectProbing, setIsDirectProbing] = useState<boolean>(false);
-  const [directProbeFeedback, setDirectProbeFeedback] = useState<string | null>(null);
+  const [directProbeFeedback, setDirectProbeFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [isDiscoveryLoading, setIsDiscoveryLoading] = useState(false);
   const [selectedMachineForCommand, setSelectedMachineForCommand] = useState<any | null>(null);
   const [isProbing, setIsProbing] = useState(false);
@@ -199,16 +199,30 @@ export const MachinesPage: React.FC = () => {
     setIsDirectProbing(true); setDirectProbeFeedback(null);
     try {
       const res = await api.probeDevice({ ipAddress: directProbeIp.trim(), port: Number(directProbePort) || 502 });
-      if (res.success && res.device) {
-        setDirectProbeFeedback(`Connected! ${res.device.ipAddress} (${res.latencyMs}ms latency)`);
+      if (res.success && res.reachable && res.device) {
+        setDirectProbeFeedback({
+          type: 'success',
+          text: `Connected! ${res.device.ipAddress}:${res.device.port} (${res.latencyMs}ms latency) • ${res.device.vendor} ${res.device.modelNumber}`
+        });
         setDiscoveredDevices(prev => {
           const exists = prev.some((d: any) => d.ipAddress === res.device.ipAddress);
           if (exists) return prev.map((d: any) => d.ipAddress === res.device.ipAddress ? { ...d, ...res.device, isRealDevice: true, latencyMs: res.latencyMs } : d);
           return [{ deviceId: `REAL-${res.device.ipAddress.replace(/\./g, '-')}`, ...res.device, latencyMs: res.latencyMs, isRealDevice: true, detectedAt: new Date().toISOString() }, ...prev];
         });
-      } else { setDirectProbeFeedback(res.error || 'No socket handshake response at IP.'); }
-    } catch (err: any) { setDirectProbeFeedback(err.message || 'Direct IP handshake timed out.'); }
-    finally { setIsDirectProbing(false); }
+      } else {
+        setDirectProbeFeedback({
+          type: 'error',
+          text: res.error || `Device unreachable at ${directProbeIp.trim()}:${directProbePort}. No socket or ping reply.`
+        });
+      }
+    } catch (err: any) {
+      setDirectProbeFeedback({
+        type: 'error',
+        text: err.message || 'Direct IP handshake timed out.'
+      });
+    } finally {
+      setIsDirectProbing(false);
+    }
   };
 
   useEffect(() => {
@@ -229,12 +243,26 @@ export const MachinesPage: React.FC = () => {
     setIsProbing(true); setProbeError(null); setProbeResult(null);
     try {
       const res = await api.probeDevice({ ipAddress: newMachine.ipAddress, port: Number(newMachine.port) || 502, protocol: newMachine.protocol });
-      if (res.success && res.device) {
+      if (res.success && res.reachable && res.device) {
         const d = res.device; setProbeResult(d);
-        setNewMachine(prev => ({ ...prev, manufacturer: d.vendor || prev.manufacturer, modelNumber: d.modelNumber || prev.modelNumber, serialNumber: d.serialNumber || prev.serialNumber, category: d.category || prev.category, name: prev.name || `${d.vendor} ${d.modelNumber}`, expectedCycleTimeSeconds: d.suggestedCycleTime || prev.expectedCycleTimeSeconds, plannedCapacityPerHour: d.suggestedCapacity || prev.plannedCapacityPerHour }));
-      } else { setProbeError(res.error || 'Device handshake failed at specified IP.'); }
-    } catch (err: any) { setProbeError(err.message || 'Network timeout: Device unreachable at specified IP address.'); }
-    finally { setIsProbing(false); }
+        setNewMachine(prev => ({
+          ...prev,
+          manufacturer: d.vendor || prev.manufacturer,
+          modelNumber: d.modelNumber || prev.modelNumber,
+          serialNumber: d.serialNumber || prev.serialNumber,
+          category: d.category || prev.category,
+          name: prev.name || `${d.vendor} ${d.modelNumber}`,
+          expectedCycleTimeSeconds: d.suggestedCycleTime || prev.expectedCycleTimeSeconds,
+          plannedCapacityPerHour: d.suggestedCapacity || prev.plannedCapacityPerHour
+        }));
+      } else {
+        setProbeError(res.error || `Device handshake failed: IP ${newMachine.ipAddress}:${newMachine.port} did not respond.`);
+      }
+    } catch (err: any) {
+      setProbeError(err.message || 'Network timeout: Device unreachable at specified IP address.');
+    } finally {
+      setIsProbing(false);
+    }
   };
 
   const handleClaimDevice = (device: any) => {
@@ -674,8 +702,17 @@ export const MachinesPage: React.FC = () => {
               </div>
             </div>
             {directProbeFeedback && (
-              <div className="text-[11px] text-emerald-400 bg-emerald-950/40 p-1.5 rounded-lg border border-emerald-500/30 flex items-center gap-1.5">
-                <CheckCircle2 className="h-3 w-3 shrink-0" />{directProbeFeedback}
+              <div className={`text-[11px] p-2 rounded-lg border flex items-center gap-1.5 font-mono ${
+                directProbeFeedback.type === 'success'
+                  ? 'text-emerald-400 bg-emerald-950/40 border-emerald-500/30'
+                  : 'text-rose-400 bg-rose-950/40 border-rose-500/30'
+              }`}>
+                {directProbeFeedback.type === 'success' ? (
+                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
+                ) : (
+                  <AlertCircle className="h-3.5 w-3.5 shrink-0 text-rose-400" />
+                )}
+                <span>{directProbeFeedback.text}</span>
               </div>
             )}
           </div>

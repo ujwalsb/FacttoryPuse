@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api.js';
-import { ScrollText, Shield, User, Globe, Clock, Filter } from 'lucide-react';
+import { ScrollText, Shield, User, Globe, Clock, Filter, RefreshCw } from 'lucide-react';
 
 export const AuditLogsPage: React.FC = () => {
   const [logs, setLogs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadLogs() {
-      try {
-        const res = await api.getAuditLogs({ limit: '100' });
-        if (res.success) setLogs(res.data);
-      } catch (err) {
-        console.error('Failed to load audit logs:', err);
-      } finally {
-        setIsLoading(false);
-      }
+  const loadLogs = async () => {
+    setIsLoading(true);
+    try {
+      const res = await api.getAuditLogs({ limit: '100' });
+      if (res.success) setLogs(res.data);
+    } catch (err) {
+      console.error('Failed to load audit logs:', err);
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  useEffect(() => {
     loadLogs();
   }, []);
 
@@ -32,6 +34,15 @@ export const AuditLogsPage: React.FC = () => {
             Cryptographic Event Signatures • IEC 62443 Traceability • Tamper-Resistant Ledger
           </p>
         </div>
+
+        <button
+          onClick={loadLogs}
+          disabled={isLoading}
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-industrial-800 bg-industrial-900 px-3.5 py-2.5 sm:py-2 text-xs font-semibold text-industrial-300 hover:text-white hover:border-industrial-700 transition-all w-full sm:w-auto text-center"
+        >
+          <RefreshCw className={`h-3.5 w-3.5 text-brand-400 ${isLoading ? 'animate-spin' : ''}`} />
+          Refresh Audit Trail
+        </button>
       </div>
 
       <div className="rounded-2xl border border-industrial-800 bg-industrial-900/70 p-4 sm:p-6 backdrop-blur-sm shadow-xl space-y-4">

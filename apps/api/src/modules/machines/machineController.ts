@@ -397,7 +397,7 @@ export class MachineController {
         return;
       }
 
-      const effectivePort = port || (protocol === IndustrialProtocol.OPC_UA ? 4840 : protocol === IndustrialProtocol.MQTT ? 1883 : 502);
+      const effectivePort = port || (protocol === IndustrialProtocol.WISE_4051 ? 80 : protocol === IndustrialProtocol.OPC_UA ? 4840 : protocol === IndustrialProtocol.MQTT ? 1883 : 502);
 
       // Perform live TCP socket connectivity check
       const tcpResult = await RealHardwareService.testTcpConnection(ipAddress.trim(), effectivePort, 800);
@@ -409,13 +409,35 @@ export class MachineController {
 
       if (!handshakeVerified) {
         const probePorts = await NetworkDiscoveryService.probeIpPorts(ipAddress.trim());
-        if (probePorts.openPorts.length > 0) {
+        if (probePorts.isReachable) {
           handshakeVerified = true;
           effectiveLatency = probePorts.latencyMs;
           detectedOpenPorts = probePorts.openPorts;
         }
       } else {
         detectedOpenPorts = [effectivePort];
+      }
+
+      // If still not verified, perform fast ICMP ping
+      if (!handshakeVerified) {
+        const ping = await NetworkDiscoveryService.pingHost(ipAddress.trim(), 400);
+        if (ping.alive) {
+          handshakeVerified = true;
+          effectiveLatency = ping.latencyMs;
+        }
+      }
+
+      if (!handshakeVerified) {
+        res.status(200).json({
+          success: false,
+          reachable: false,
+          handshakeVerified: false,
+          pingStatus: 'UNREACHABLE',
+          latencyMs: 0,
+          openPorts: [],
+          error: `Device at ${ipAddress.trim()}:${effectivePort} is unreachable. No socket handshake response on port ${effectivePort} or ICMP ping reply.`
+        });
+        return;
       }
 
       // Resolve hardware identifiers using real MAC / IP resolution
@@ -434,10 +456,10 @@ export class MachineController {
 
       res.json({
         success: true,
-        pingStatus: handshakeVerified ? 'SUCCESS' : 'UNREACHABLE_WARNING',
+        pingStatus: 'SUCCESS',
         latencyMs: effectiveLatency || 4,
-        handshakeVerified,
-        reachable: handshakeVerified,
+        handshakeVerified: true,
+        reachable: true,
         openPorts: detectedOpenPorts,
         device: {
           ipAddress: ipAddress.trim(),
@@ -451,6 +473,7 @@ export class MachineController {
           protocol: protocol || info.protocol,
           suggestedCycleTime: info.suggestedCycleTime,
           suggestedCapacity: info.suggestedCapacity,
+          isRealDevice: true,
           detectedTags
         }
       });
