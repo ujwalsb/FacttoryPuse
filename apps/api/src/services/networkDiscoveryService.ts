@@ -494,7 +494,7 @@ export class NetworkDiscoveryService {
     }
 
     const effectiveSubnet = options.subnet || currentInterface?.subnet || '10.220.84.0/24';
-    const mode = options.mode || 'real';
+    const mode = options.mode || 'hybrid';
     const registeredIps = options.registeredIps || new Set<string>();
     const registeredMachines = options.registeredMachines || [];
 
@@ -557,9 +557,56 @@ export class NetworkDiscoveryService {
       }
     }
 
-    // 2. Add Virtual Simulated Factory PLCs if requested or hybrid
-    if (mode === 'simulated' || mode === 'hybrid') {
+    // 2. Add Virtual Simulated / Cloud Testbed Factory PLCs (if requested, hybrid, or when 0 real devices respond on cloud datacenter)
+    if (mode === 'simulated' || mode === 'hybrid' || discoveredDevices.length === 0) {
       const simulatedCandidates: DiscoveredDevice[] = [
+        {
+          deviceId: 'DISC-WISE-4051',
+          vendor: 'Advantech Co., Ltd.',
+          modelNumber: 'WISE-4051 IoT Wireless I/O Module',
+          category: 'Industrial IoT Digital I/O Gateway',
+          serialNumber: 'SN-W4051-8DI-9124',
+          macAddress: '00:07:4F:2A:81:90',
+          firmware: 'WISE-4051 A1.01 B00',
+          ipAddress: '192.168.1.11',
+          port: 80,
+          protocol: IndustrialProtocol.WISE_4051,
+          latencyMs: 3,
+          detectedAt: new Date(Date.now() - 15000).toISOString(),
+          suggestedCycleTime: 10.0,
+          suggestedCapacity: 360,
+          isRealDevice: false,
+          interfaceName: 'Advantech Wireless OT Network',
+          detectedTags: [
+            { tagName: 'DI_0_RunStatus', plcAddress: '/di_value/slot_0/ch_0', dataType: 'BOOLEAN', metricRole: 'STATE' },
+            { tagName: 'DI_1_GoodPartsPulse', plcAddress: '/di_value/slot_0/ch_1', dataType: 'COUNTER', metricRole: 'GOOD_COUNT' },
+            { tagName: 'DI_2_RejectPulse', plcAddress: '/di_value/slot_0/ch_2', dataType: 'COUNTER', metricRole: 'REJECT_COUNT' },
+            { tagName: 'DI_3_SafetyGate', plcAddress: '/di_value/slot_0/ch_3', dataType: 'BOOLEAN', metricRole: 'EMERGENCY_STOP' },
+            { tagName: 'DI_4_EmergencyStop', plcAddress: '/di_value/slot_0/ch_4', dataType: 'BOOLEAN', metricRole: 'EMERGENCY_STOP' },
+            { tagName: 'DI_5_FeedRateValid', plcAddress: '/di_value/slot_0/ch_5', dataType: 'BOOLEAN', metricRole: 'CYCLE_TIME' },
+            { tagName: 'DI_6_LubeLevelOk', plcAddress: '/di_value/slot_0/ch_6', dataType: 'BOOLEAN', metricRole: 'TEMPERATURE' },
+            { tagName: 'DI_7_SpindleInterlock', plcAddress: '/di_value/slot_0/ch_7', dataType: 'BOOLEAN', metricRole: 'STATE' }
+          ]
+        },
+        {
+          deviceId: 'DISC-MOXA-8200',
+          vendor: 'Moxa Inc.',
+          modelNumber: 'Moxa UC-8200 Industrial IoT Gateway',
+          category: 'Industrial Edge Gateway',
+          serialNumber: 'SN-MX-8200-51920',
+          macAddress: '00:90:E8:1D:44:02',
+          firmware: 'Moxa Industrial Linux 1.2',
+          ipAddress: '192.168.1.254',
+          port: 502,
+          protocol: IndustrialProtocol.MODBUS_TCP,
+          latencyMs: 2,
+          detectedAt: new Date(Date.now() - 35000).toISOString(),
+          suggestedCycleTime: 12.0,
+          suggestedCapacity: 300,
+          isRealDevice: false,
+          interfaceName: 'Plant Fieldbus Subnet',
+          detectedTags: this.getProtocolTags(IndustrialProtocol.MODBUS_TCP, 502)
+        },
         {
           deviceId: 'SIM-DEV-001',
           vendor: 'Siemens AG',

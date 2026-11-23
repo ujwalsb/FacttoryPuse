@@ -114,7 +114,7 @@ export const MachinesPage: React.FC = () => {
   const [discoveredSubnet, setDiscoveredSubnet] = useState<string>('Auto (Host Network)');
   const [networkInterfaces, setNetworkInterfaces] = useState<any[]>([]);
   const [selectedInterface, setSelectedInterface] = useState<string>('all');
-  const [discoveryMode, setDiscoveryMode] = useState<'real' | 'hybrid'>('real');
+  const [discoveryMode, setDiscoveryMode] = useState<'real' | 'hybrid'>('hybrid');
   const [customSubnetInput, setCustomSubnetInput] = useState<string>('');
   const [directProbeIp, setDirectProbeIp] = useState<string>('');
   const [directProbePort, setDirectProbePort] = useState<number>(502);
@@ -289,7 +289,26 @@ export const MachinesPage: React.FC = () => {
   const handleClaimDevice = (device: any) => {
     setIsDiscoveryModalOpen(false); setProbeResult(device); setProbeError(null);
     const assetIdGen = `DEV-${device.vendor.split(' ')[0].toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
-    setNewMachine(prev => ({ ...prev, assetId: assetIdGen, name: `${device.vendor} ${device.modelNumber}`, category: device.category, manufacturer: device.vendor, modelNumber: device.modelNumber, serialNumber: device.serialNumber, protocol: device.protocol, ipAddress: device.ipAddress, port: device.port, expectedCycleTimeSeconds: device.suggestedCycleTime, plannedCapacityPerHour: device.suggestedCapacity, isMonitored: true, isSimulated: false }));
+    const isWise = device.protocol === IndustrialProtocol.WISE_4051 || device.modelNumber?.includes('4051');
+    setNewMachine(prev => ({
+      ...prev,
+      assetId: assetIdGen,
+      name: `${device.vendor} ${device.modelNumber}`,
+      category: device.category,
+      manufacturer: device.vendor,
+      modelNumber: device.modelNumber,
+      serialNumber: device.serialNumber,
+      protocol: isWise ? IndustrialProtocol.WISE_4051 : device.protocol,
+      ipAddress: device.ipAddress,
+      port: isWise ? 80 : device.port,
+      expectedCycleTimeSeconds: device.suggestedCycleTime,
+      plannedCapacityPerHour: device.suggestedCapacity,
+      isMonitored: true,
+      isSimulated: false
+    }));
+    if (isWise) {
+      setNewMachineDis(getDefaultDigitalInputConfigs());
+    }
     setIsRegisterModalOpen(true);
   };
 
@@ -712,13 +731,27 @@ export const MachinesPage: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="pt-3 border-t border-industrial-900 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <span className="text-industrial-400 flex items-center gap-1 shrink-0"><Search className="h-3 w-3 text-brand-400" /> Direct IP Probe:</span>
-              <div className="flex flex-wrap items-center gap-1.5 flex-1 max-w-md">
-                <input type="text" placeholder="e.g. 10.220.84.207" value={directProbeIp} onChange={e => setDirectProbeIp(e.target.value)} className="flex-1 min-w-[140px] bg-industrial-900 border border-industrial-700 rounded-lg px-2.5 py-1 text-white text-xs placeholder:text-industrial-600 focus:border-brand-500 focus:outline-none" />
-                <input type="number" placeholder="502" value={directProbePort} onChange={e => setDirectProbePort(Number(e.target.value))} className="w-16 bg-industrial-900 border border-industrial-700 rounded-lg px-2 py-1 text-white text-xs focus:border-brand-500 focus:outline-none" />
-                <button type="button" onClick={handleDirectIpProbe} disabled={!directProbeIp.trim() || isDirectProbing} className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-brand-600 text-white font-semibold hover:bg-brand-500 transition-all text-xs disabled:opacity-50">
-                  {isDirectProbing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Zap className="h-3 w-3" />} Probe
+            <div className="pt-3 border-t border-industrial-900 flex flex-col gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <span className="text-industrial-400 flex items-center gap-1 shrink-0"><Search className="h-3 w-3 text-brand-400" /> Direct IP Probe:</span>
+                <div className="flex flex-wrap items-center gap-1.5 flex-1 max-w-md">
+                  <input type="text" placeholder="e.g. 192.168.1.11 or 10.220.84.207" value={directProbeIp} onChange={e => setDirectProbeIp(e.target.value)} className="flex-1 min-w-[140px] bg-industrial-900 border border-industrial-700 rounded-lg px-2.5 py-1 text-white text-xs placeholder:text-industrial-600 focus:border-brand-500 focus:outline-none font-mono" />
+                  <input type="number" placeholder="502" value={directProbePort} onChange={e => setDirectProbePort(Number(e.target.value))} className="w-16 bg-industrial-900 border border-industrial-700 rounded-lg px-2 py-1 text-white text-xs focus:border-brand-500 focus:outline-none font-mono" />
+                  <button type="button" onClick={handleDirectIpProbe} disabled={!directProbeIp.trim() || isDirectProbing} className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-brand-600 text-white font-semibold hover:bg-brand-500 transition-all text-xs disabled:opacity-50">
+                    {isDirectProbing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Zap className="h-3 w-3" />} Probe
+                  </button>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-1.5 text-[10px] text-industrial-400">
+                <span className="text-industrial-500">Quick Testbed Presets:</span>
+                <button type="button" onClick={() => { setDirectProbeIp('192.168.1.11'); setDirectProbePort(80); }} className="px-2 py-0.5 rounded bg-industrial-900 hover:bg-industrial-800 border border-industrial-800 hover:border-amber-500/50 text-amber-300 font-mono transition-all">
+                  WISE-4051 (192.168.1.11:80)
+                </button>
+                <button type="button" onClick={() => { setDirectProbeIp('192.168.1.254'); setDirectProbePort(502); }} className="px-2 py-0.5 rounded bg-industrial-900 hover:bg-industrial-800 border border-industrial-800 hover:border-brand-500/50 text-brand-300 font-mono transition-all">
+                  Moxa Gateway (192.168.1.254:502)
+                </button>
+                <button type="button" onClick={() => { setDirectProbeIp('192.168.10.25'); setDirectProbePort(502); }} className="px-2 py-0.5 rounded bg-industrial-900 hover:bg-industrial-800 border border-industrial-800 hover:border-brand-500/50 text-industrial-300 font-mono transition-all">
+                  Siemens S7 (192.168.10.25:502)
                 </button>
               </div>
             </div>
@@ -745,11 +778,11 @@ export const MachinesPage: React.FC = () => {
             ) : discoveredDevices.length === 0 ? (
               <div className="text-center py-12 text-industrial-500 font-mono text-xs space-y-2">
                 <Radio className="h-8 w-8 mx-auto text-industrial-600 mb-1" />
-                <p>No broadcasting devices detected.</p>
+                <p>No broadcasting devices detected on this subnet.</p>
                 <button onClick={() => { setDiscoveryMode('hybrid'); fetchDiscoveredDevices({ mode: 'hybrid' }); }} className="text-brand-400 hover:underline text-xs">Switch to Hybrid Mode</button>
               </div>
             ) : discoveredDevices.map((d: any) => (
-              <div key={d.deviceId} className={`p-4 rounded-xl border transition-all ${d.isClaimed ? 'border-industrial-800 bg-industrial-950/40 opacity-60' : d.isRealDevice ? 'border-emerald-500/40 bg-industrial-950/90 hover:border-emerald-400' : 'border-brand-500/40 bg-industrial-950/90 hover:border-brand-400'}`}>
+              <div key={d.deviceId} className={`p-4 rounded-xl border transition-all ${d.isClaimed ? 'border-industrial-800 bg-industrial-950/40 opacity-60' : d.isRealDevice ? 'border-emerald-500/40 bg-industrial-950/90 hover:border-emerald-400' : d.protocol === IndustrialProtocol.WISE_4051 ? 'border-amber-500/50 bg-amber-950/20 hover:border-amber-400' : 'border-brand-500/40 bg-industrial-950/90 hover:border-brand-400'}`}>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="space-y-1.5">
                     <div className="flex flex-wrap items-center gap-2">
@@ -757,7 +790,14 @@ export const MachinesPage: React.FC = () => {
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center gap-1">
                           <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />Real Device
                         </span>
-                      ) : <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-industrial-800 text-industrial-400 border border-industrial-700">Virtual</span>}
+                      ) : (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-industrial-800 text-industrial-400 border border-industrial-700">Virtual / Testbed</span>
+                      )}
+                      {d.protocol === IndustrialProtocol.WISE_4051 && (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1">
+                          <Sparkles className="h-3 w-3 text-amber-400" />WISE-4051 (8 DI)
+                        </span>
+                      )}
                       <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-brand-500/20 text-brand-300 border border-brand-500/30">{d.vendor}</span>
                       <h4 className="font-bold text-white text-sm">{d.modelNumber}</h4>
                       <span className="text-[10px] font-mono text-emerald-400 flex items-center gap-1"><SignalBars latencyMs={d.latencyMs} /> {d.latencyMs}ms</span>
