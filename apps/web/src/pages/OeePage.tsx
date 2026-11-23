@@ -422,11 +422,10 @@ export const OeePage: React.FC = () => {
           </div>
 
           <span
-            className={`px-2 py-0.5 rounded-full text-[10px] font-bold font-mono border ${
-              isAboveTarget
+            className={`px-2 py-0.5 rounded-full text-[10px] font-bold font-mono border ${isAboveTarget
                 ? 'bg-emerald-950/70 border-emerald-500/40 text-emerald-400'
                 : 'bg-amber-950/70 border-amber-500/40 text-amber-400'
-            }`}
+              }`}
           >
             {isAboveTarget ? 'World Class' : 'Target: 85%'}
           </span>
@@ -498,7 +497,7 @@ export const OeePage: React.FC = () => {
             </span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white font-mono">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white font-mono">
             Overall Equipment Effectiveness (OEE) Intelligence
           </h1>
           <p className="text-xs text-industrial-400 font-mono mt-1">
@@ -735,18 +734,17 @@ export const OeePage: React.FC = () => {
 
       {/* ─── MULTI-PERSPECTIVE ANALYTICAL TABS ─── */}
       <div className="rounded-2xl border border-industrial-800 bg-industrial-900/80 p-5 backdrop-blur-xl shadow-xl space-y-5">
-        
+
         {/* Tab Navigation Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-industrial-800 pb-3">
-          <div className="flex rounded-xl bg-industrial-950 p-1 border border-industrial-800 text-xs font-mono">
+          <div className="flex overflow-x-auto no-scrollbar max-w-full rounded-xl bg-industrial-950 p-1 border border-industrial-800 text-xs font-mono">
             <button
               type="button"
               onClick={() => setActiveTab('matrix')}
-              className={`px-3.5 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 ${
-                activeTab === 'matrix'
+              className={`px-3.5 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 shrink-0 ${activeTab === 'matrix'
                   ? 'bg-brand-600 text-white shadow-sm font-bold'
                   : 'text-industrial-400 hover:text-white'
-              }`}
+                }`}
             >
               <BarChart3 className="h-3.5 w-3.5" />
               <span>Fleet Asset Matrix</span>
@@ -755,11 +753,10 @@ export const OeePage: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab('throughput')}
-              className={`px-3.5 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 ${
-                activeTab === 'throughput'
+              className={`px-3.5 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 shrink-0 ${activeTab === 'throughput'
                   ? 'bg-brand-600 text-white shadow-sm font-bold'
                   : 'text-industrial-400 hover:text-white'
-              }`}
+                }`}
             >
               <Activity className="h-3.5 w-3.5" />
               <span>Hourly Shift Profile</span>
@@ -768,11 +765,10 @@ export const OeePage: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab('pareto')}
-              className={`px-3.5 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 ${
-                activeTab === 'pareto'
+              className={`px-3.5 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 shrink-0 ${activeTab === 'pareto'
                   ? 'bg-brand-600 text-white shadow-sm font-bold'
                   : 'text-industrial-400 hover:text-white'
-              }`}
+                }`}
             >
               <AlertTriangle className="h-3.5 w-3.5" />
               <span>Downtime Pareto (80/20)</span>
@@ -781,11 +777,10 @@ export const OeePage: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab('simulator')}
-              className={`px-3.5 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 ${
-                activeTab === 'simulator'
+              className={`px-3.5 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 shrink-0 ${activeTab === 'simulator'
                   ? 'bg-brand-600 text-white shadow-sm font-bold'
                   : 'text-industrial-400 hover:text-white'
-              }`}
+                }`}
             >
               <Sparkles className="h-3.5 w-3.5 text-amber-300" />
               <span>What-If ROI Calculator</span>
@@ -1074,8 +1069,8 @@ export const OeePage: React.FC = () => {
         </div>
 
         {/* Ledger Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+        <div className="overflow-x-auto table-scroll-container">
+          <table className="w-full min-w-[760px] text-left text-xs">
             <thead className="border-b border-industrial-800 bg-industrial-950/60 text-industrial-400 uppercase tracking-wider text-[11px]">
               <tr>
                 <th className="py-3 px-3.5">Asset ID</th>
@@ -1133,13 +1128,12 @@ export const OeePage: React.FC = () => {
                       {/* Live State Status */}
                       <td className="py-3 px-3 text-center">
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                            item.machineId?.state === 'RUNNING'
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${item.machineId?.state === 'RUNNING'
                               ? 'bg-emerald-950/70 text-emerald-400 border border-emerald-500/30'
                               : item.machineId?.state === 'IDLE'
-                              ? 'bg-amber-950/70 text-amber-400 border border-amber-500/30'
-                              : 'bg-rose-950/70 text-rose-400 border border-rose-500/30'
-                          }`}
+                                ? 'bg-amber-950/70 text-amber-400 border border-amber-500/30'
+                                : 'bg-rose-950/70 text-rose-400 border border-rose-500/30'
+                            }`}
                         >
                           {item.machineId?.state || 'ONLINE'}
                         </span>

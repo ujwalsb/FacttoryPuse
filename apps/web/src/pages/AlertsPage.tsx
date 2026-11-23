@@ -114,9 +114,9 @@ export const AlertsPage: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-industrial-800 pb-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white font-mono flex items-center gap-2">
-            <AlertTriangle className="h-6 w-6 text-amber-400" />
-            Incident Alarms & Anomaly Dispatch Center
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-mono flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-amber-400 shrink-0" />
+            <span>Incident Alarms & Anomaly Dispatch Center</span>
           </h1>
           <p className="text-xs text-industrial-400 mt-1 font-mono">
             Automated Threshold Evaluator • Deduplication • Escalation & Resolution Sign-Off
@@ -126,7 +126,7 @@ export const AlertsPage: React.FC = () => {
         {canManageRules && (
           <button
             onClick={() => setIsCreateRuleModal(true)}
-            className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-brand-600/30 hover:bg-brand-500 transition-all self-start sm:self-auto"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 sm:py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-brand-600/30 hover:bg-brand-500 transition-all w-full sm:w-auto"
           >
             <Plus className="h-4 w-4" />
             Configure Anomaly Rule
@@ -140,11 +140,10 @@ export const AlertsPage: React.FC = () => {
           <button
             key={st}
             onClick={() => setStatusFilter(st)}
-            className={`px-3 sm:px-3.5 py-1.5 rounded-lg border font-semibold uppercase tracking-wider transition-all ${
-              statusFilter === st
+            className={`px-3 sm:px-3.5 py-1.5 rounded-lg border font-semibold uppercase tracking-wider transition-all ${statusFilter === st
                 ? 'bg-brand-600 border-brand-500 text-white'
                 : 'bg-industrial-900 border-industrial-800 text-industrial-400 hover:text-white'
-            }`}
+              }`}
           >
             {st}
           </button>
@@ -157,8 +156,8 @@ export const AlertsPage: React.FC = () => {
           Incident Event Ledger ({alerts.length})
         </h3>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs font-mono">
+        <div className="overflow-x-auto table-scroll-container">
+          <table className="w-full min-w-[720px] text-left text-xs font-mono">
             <thead className="border-b border-industrial-800 bg-industrial-950/60 text-industrial-400 uppercase tracking-wider">
               <tr>
                 <th className="py-3 px-4">Severity</th>
@@ -182,11 +181,10 @@ export const AlertsPage: React.FC = () => {
                   <tr key={a._id} className="hover:bg-industrial-800/30 transition-colors">
                     <td className="py-3.5 px-4">
                       <span
-                        className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-                          a.severity === 'CRITICAL'
+                        className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border ${a.severity === 'CRITICAL'
                             ? 'border-rose-500/40 bg-rose-950/60 text-rose-400'
                             : 'border-amber-500/40 bg-amber-950/60 text-amber-400'
-                        }`}
+                          }`}
                       >
                         <span className={`w-1.5 h-1.5 rounded-full ${a.severity === 'CRITICAL' ? 'bg-rose-400' : 'bg-amber-400'}`} />
                         {a.severity}

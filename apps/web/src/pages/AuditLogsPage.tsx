@@ -39,8 +39,8 @@ export const AuditLogsPage: React.FC = () => {
           Security & Command Log Records ({logs.length})
         </h3>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs font-mono">
+        <div className="overflow-x-auto table-scroll-container">
+          <table className="w-full min-w-[720px] text-left text-xs font-mono">
             <thead className="border-b border-industrial-800 bg-industrial-950/60 text-industrial-400 uppercase tracking-wider">
               <tr>
                 <th className="py-3 px-4">Timestamp</th>

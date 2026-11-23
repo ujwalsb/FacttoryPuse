@@ -24,8 +24,8 @@ const OeeRing: React.FC<{ value: number; size?: number }> = ({ value, size = 52 
   const color = value >= 80 ? '#34d399' : value >= 60 ? '#fbbf24' : '#f87171';
   return (
     <svg width={size} height={size} className="rotate-[-90deg]">
-      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="4" />
-      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth="4"
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="4" />
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth="4"
         strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round"
         style={{ transition: 'stroke-dashoffset 0.8s ease' }} />
     </svg>
@@ -53,7 +53,7 @@ const SignalBars: React.FC<{ latencyMs?: number }> = ({ latencyMs }) => {
   const bars = latencyMs === undefined ? 0 : latencyMs < 10 ? 4 : latencyMs < 30 ? 3 : latencyMs < 80 ? 2 : 1;
   return (
     <div className="flex items-end gap-0.5">
-      {[1,2,3,4].map(b => (
+      {[1, 2, 3, 4].map(b => (
         <div key={b} style={{ height: `${b * 3 + 3}px` }}
           className={`w-1 rounded-sm transition-all ${b <= bars ? 'bg-emerald-400' : 'bg-industrial-700'}`} />
       ))}
@@ -322,15 +322,15 @@ export const MachinesPage: React.FC = () => {
             </div>
           </div>
           {canManageMachines && (
-            <div className="flex flex-wrap items-center gap-2.5">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
               <button onClick={() => { setIsDiscoveryModalOpen(true); fetchDiscoveredDevices(); }}
-                className="inline-flex items-center gap-2 rounded-xl border border-brand-500/40 bg-brand-950/40 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-brand-300 shadow-lg hover:bg-brand-900/60 hover:border-brand-400 hover:text-white transition-all">
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-brand-500/40 bg-brand-950/40 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-brand-300 shadow-lg hover:bg-brand-900/60 hover:border-brand-400 hover:text-white transition-all w-full sm:w-auto text-center">
                 <Radio className="h-4 w-4 text-brand-400 animate-pulse" />
                 Auto-Detect Devices
                 {unclaimedDevicesCount > 0 && <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-500 text-[10px] font-bold text-white">{unclaimedDevicesCount}</span>}
               </button>
               <button onClick={() => { setProbeResult(null); setProbeError(null); setIsRegisterModalOpen(true); }}
-                className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-brand-600/30 hover:bg-brand-500 transition-all">
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-brand-600/30 hover:bg-brand-500 transition-all w-full sm:w-auto text-center">
                 <Plus className="h-4 w-4" />Register Machine
               </button>
             </div>
@@ -362,22 +362,20 @@ export const MachinesPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setOnlyAssigned(false)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
-                  !onlyAssigned
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${!onlyAssigned
                     ? 'bg-amber-500 text-black shadow-md'
                     : 'bg-industrial-900 border border-industrial-800 text-industrial-400 hover:text-white'
-                }`}
+                  }`}
               >
                 All Fleet ({enrichedMachines.length})
               </button>
               <button
                 type="button"
                 onClick={() => setOnlyAssigned(true)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
-                  onlyAssigned
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${onlyAssigned
                     ? 'bg-amber-500 text-black shadow-md'
                     : 'bg-industrial-900 border border-industrial-800 text-industrial-400 hover:text-white'
-                }`}
+                  }`}
               >
                 My Cell ({assignedMachineIds.length})
               </button>
@@ -419,11 +417,11 @@ export const MachinesPage: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {([
           { label: 'Total Assets', value: fleetStats.total, icon: <Boxes className="h-4 w-4" />, color: 'text-industrial-300', bg: 'bg-industrial-800/40', border: 'border-industrial-700/50' },
-          { label: 'Running',      value: fleetStats.running, icon: <Activity className="h-4 w-4" />, color: 'text-emerald-400', bg: 'bg-emerald-950/40', border: 'border-emerald-500/30' },
-          { label: 'Faulted',     value: fleetStats.faulted, icon: <AlertTriangle className="h-4 w-4" />, color: 'text-red-400', bg: 'bg-red-950/40', border: 'border-red-500/30' },
-          { label: 'Offline',     value: fleetStats.offline, icon: <WifiOff className="h-4 w-4" />, color: 'text-industrial-400', bg: 'bg-industrial-900/40', border: 'border-industrial-700/50' },
-          { label: 'Connected',   value: fleetStats.connected, icon: <Signal className="h-4 w-4" />, color: 'text-cyan-400', bg: 'bg-cyan-950/40', border: 'border-cyan-500/30' },
-          { label: 'Fleet OEE',   value: `${fleetStats.avgOee}%`, icon: <BarChart3 className="h-4 w-4" />, color: fleetStats.avgOee >= 80 ? 'text-emerald-400' : fleetStats.avgOee >= 60 ? 'text-amber-400' : 'text-rose-400', bg: 'bg-industrial-900/40', border: 'border-industrial-700/50' },
+          { label: 'Running', value: fleetStats.running, icon: <Activity className="h-4 w-4" />, color: 'text-emerald-400', bg: 'bg-emerald-950/40', border: 'border-emerald-500/30' },
+          { label: 'Faulted', value: fleetStats.faulted, icon: <AlertTriangle className="h-4 w-4" />, color: 'text-red-400', bg: 'bg-red-950/40', border: 'border-red-500/30' },
+          { label: 'Offline', value: fleetStats.offline, icon: <WifiOff className="h-4 w-4" />, color: 'text-industrial-400', bg: 'bg-industrial-900/40', border: 'border-industrial-700/50' },
+          { label: 'Connected', value: fleetStats.connected, icon: <Signal className="h-4 w-4" />, color: 'text-cyan-400', bg: 'bg-cyan-950/40', border: 'border-cyan-500/30' },
+          { label: 'Fleet OEE', value: `${fleetStats.avgOee}%`, icon: <BarChart3 className="h-4 w-4" />, color: fleetStats.avgOee >= 80 ? 'text-emerald-400' : fleetStats.avgOee >= 60 ? 'text-amber-400' : 'text-rose-400', bg: 'bg-industrial-900/40', border: 'border-industrial-700/50' },
         ] as const).map(stat => (
           <div key={stat.label} className={`flex items-center gap-3 rounded-xl border ${stat.border} ${stat.bg} px-4 py-3 backdrop-blur-sm`}>
             <span className={stat.color}>{stat.icon}</span>

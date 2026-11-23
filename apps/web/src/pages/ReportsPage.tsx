@@ -68,9 +68,9 @@ export const ReportsPage: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-industrial-800 pb-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white font-mono flex items-center gap-2">
-            <FileSpreadsheet className="h-6 w-6 text-brand-400" />
-            Manufacturing Reports & Export Center
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-mono flex items-center gap-2">
+            <FileSpreadsheet className="h-5 w-5 sm:h-6 sm:w-6 text-brand-400 shrink-0" />
+            <span>Manufacturing Reports & Export Center</span>
           </h1>
           <p className="text-xs text-industrial-400 mt-1 font-mono">
             Audit-Grade Production Ledgers • Downtime Analysis • Real-time CSV Export
@@ -107,8 +107,8 @@ export const ReportsPage: React.FC = () => {
           </span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs font-mono">
+        <div className="overflow-x-auto table-scroll-container">
+          <table className="w-full min-w-[750px] text-left text-xs font-mono">
             <thead className="border-b border-industrial-800 bg-industrial-950/60 text-industrial-400 uppercase tracking-wider">
               <tr>
                 <th className="py-3 px-4">Date</th>

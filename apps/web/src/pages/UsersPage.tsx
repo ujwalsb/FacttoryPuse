@@ -263,8 +263,8 @@ export const UsersPage: React.FC = () => {
       {feedbackMsg && (
         <div
           className={`flex items-center justify-between rounded-xl p-3 text-xs font-mono border ${feedbackMsg.type === 'success'
-              ? 'border-emerald-500/40 bg-emerald-950/40 text-emerald-300'
-              : 'border-rose-500/40 bg-rose-950/40 text-rose-300'
+            ? 'border-emerald-500/40 bg-emerald-950/40 text-emerald-300'
+            : 'border-rose-500/40 bg-rose-950/40 text-rose-300'
             }`}
         >
           <div className="flex items-center gap-2">
@@ -335,8 +335,8 @@ export const UsersPage: React.FC = () => {
           </span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs font-mono">
+        <div className="overflow-x-auto table-scroll-container">
+          <table className="w-full min-w-[700px] text-left text-xs font-mono">
             <thead className="border-b border-industrial-800 bg-industrial-950/60 text-industrial-400 uppercase tracking-wider">
               <tr>
                 <th className="py-3 px-4">Employee Name</th>
@@ -392,8 +392,8 @@ export const UsersPage: React.FC = () => {
                       <td className="py-3.5 px-4">
                         <span
                           className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${u.isActive
-                              ? 'border-emerald-500/40 bg-emerald-950/60 text-emerald-400'
-                              : 'border-rose-500/40 bg-rose-950/60 text-rose-400'
+                            ? 'border-emerald-500/40 bg-emerald-950/60 text-emerald-400'
+                            : 'border-rose-500/40 bg-rose-950/60 text-rose-400'
                             }`}
                         >
                           <span className={`w-1.5 h-1.5 rounded-full ${u.isActive ? 'bg-emerald-400' : 'bg-rose-400'}`} />
@@ -419,8 +419,8 @@ export const UsersPage: React.FC = () => {
                             onClick={() => handleToggleStatus(u._id, u.isActive)}
                             disabled={isCurrent}
                             className={`rounded-lg border px-2 py-1 text-[11px] font-semibold transition-all ${u.isActive
-                                ? 'border-amber-500/30 text-amber-400 hover:bg-amber-950/30'
-                                : 'border-emerald-500/30 text-emerald-400 hover:bg-emerald-950/30'
+                              ? 'border-amber-500/30 text-amber-400 hover:bg-amber-950/30'
+                              : 'border-emerald-500/30 text-emerald-400 hover:bg-emerald-950/30'
                               } disabled:opacity-30 disabled:cursor-not-allowed`}
                             title={isCurrent ? "Cannot disable your own active account" : u.isActive ? 'Deactivate Account' : 'Activate Account'}
                           >

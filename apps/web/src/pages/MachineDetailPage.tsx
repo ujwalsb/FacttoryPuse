@@ -175,7 +175,7 @@ export const MachineDetailPage: React.FC = () => {
               </span>
               <StatusBadge state={currentState} size="sm" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-white font-mono mt-0.5">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-mono mt-0.5 truncate">
               {machine.name}
             </h1>
           </div>

@@ -146,7 +146,7 @@ export const DashboardPage: React.FC = () => {
       {/* Top Banner */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-industrial-800 pb-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white font-mono flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-mono flex items-center gap-2">
             Operations Executive Command Center
           </h1>
           <p className="text-xs text-industrial-400 mt-1 font-mono">
@@ -156,7 +156,7 @@ export const DashboardPage: React.FC = () => {
 
         <button
           onClick={fetchDashboardData}
-          className="inline-flex items-center gap-2 rounded-xl border border-industrial-800 bg-industrial-900 px-3.5 py-2 text-xs font-semibold text-industrial-300 hover:border-industrial-700 hover:text-white transition-all self-start sm:self-auto font-mono"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-industrial-800 bg-industrial-900 px-3.5 py-2.5 sm:py-2 text-xs font-semibold text-industrial-300 hover:border-industrial-700 hover:text-white transition-all w-full sm:w-auto font-mono text-center"
         >
           <RefreshCw className="h-3.5 w-3.5 text-brand-400" />
           Sync Ingestion Pipeline
@@ -237,8 +237,8 @@ export const DashboardPage: React.FC = () => {
               <AreaChart data={hourlyThroughputData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="actualGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4}/>
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0.0}/>
+                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />

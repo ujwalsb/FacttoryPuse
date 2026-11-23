@@ -77,9 +77,9 @@ export const GatewaysPage: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-industrial-800 pb-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white font-mono flex items-center gap-2">
-            <Network className="h-6 w-6 text-brand-400" />
-            Edge Gateways & Industrial Protocol Drivers
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-mono flex items-center gap-2">
+            <Network className="h-5 w-5 sm:h-6 sm:w-6 text-brand-400 shrink-0" />
+            <span>Edge Gateways & Industrial Protocol Drivers</span>
           </h1>
           <p className="text-xs text-industrial-400 mt-1 font-mono">
             Outbound TLS Encrypted Links • Local Industrial Bus Adapters • Hardware Health
@@ -88,7 +88,7 @@ export const GatewaysPage: React.FC = () => {
 
         <button
           onClick={() => setIsRegisterModalOpen(true)}
-          className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-brand-600/30 hover:bg-brand-500 transition-all self-start sm:self-auto"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 sm:py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-brand-600/30 hover:bg-brand-500 transition-all w-full sm:w-auto text-center"
         >
           <Plus className="h-4 w-4" />
           Provision Edge Gateway

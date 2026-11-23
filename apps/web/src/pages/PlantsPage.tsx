@@ -259,8 +259,8 @@ export const PlantsPage: React.FC = () => {
     const avgOee =
       totalAssets > 0
         ? Math.round(
-            plantMachines.reduce((acc, m) => acc + (m.liveOee || 0), 0) / totalAssets
-          )
+          plantMachines.reduce((acc, m) => acc + (m.liveOee || 0), 0) / totalAssets
+        )
         : 84;
 
     const totalKw = plantMachines.reduce((acc, m) => acc + (m.livePowerKw || 0), 0);
@@ -320,10 +320,10 @@ export const PlantsPage: React.FC = () => {
       variancePercent >= 3
         ? 'AHEAD'
         : variancePercent >= -2
-        ? 'ON_TRACK'
-        : variancePercent >= -8
-        ? 'AT_RISK'
-        : 'BEHIND';
+          ? 'ON_TRACK'
+          : variancePercent >= -8
+            ? 'AT_RISK'
+            : 'BEHIND';
 
     // Generate Hourly Trajectory Chart Data (Hours 1 to 8)
     const trajectoryData = [];
@@ -567,7 +567,7 @@ export const PlantsPage: React.FC = () => {
             <span className="text-xs text-industrial-500">•</span>
             <span className="text-xs text-industrial-400 font-mono">ISO 22400 Production Topology</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
             <div className="p-2 rounded-xl bg-gradient-to-br from-brand-600/30 to-brand-800/10 border border-brand-500/40 text-brand-400 shadow-lg shadow-brand-500/10">
               <Factory className="h-7 w-7" />
             </div>
@@ -637,11 +637,10 @@ export const PlantsPage: React.FC = () => {
               <div
                 key={plant._id}
                 onClick={() => selectPlant(plant)}
-                className={`group relative cursor-pointer rounded-2xl border p-4 transition-all duration-300 ${
-                  isSelected
+                className={`group relative cursor-pointer rounded-2xl border p-4 transition-all duration-300 ${isSelected
                     ? 'border-brand-500/80 bg-gradient-to-br from-brand-950/40 via-industrial-900/90 to-industrial-950 shadow-xl shadow-brand-500/10 ring-1 ring-brand-500/30'
                     : 'border-industrial-800/80 bg-industrial-900/50 hover:border-industrial-700 hover:bg-industrial-900/80'
-                }`}
+                  }`}
               >
                 {/* Active Indicator Bar */}
                 {isSelected && (
@@ -676,11 +675,10 @@ export const PlantsPage: React.FC = () => {
                       </button>
                     )}
                     <div
-                      className={`p-2 rounded-xl border ${
-                        isSelected
+                      className={`p-2 rounded-xl border ${isSelected
                           ? 'border-brand-500/40 bg-brand-600/20 text-brand-400'
                           : 'border-industrial-800 bg-industrial-950/60 text-industrial-400'
-                      }`}
+                        }`}
                     >
                       <Factory className="h-4 w-4" />
                     </div>
@@ -823,14 +821,13 @@ export const PlantsPage: React.FC = () => {
 
       {/* ─── Mode Switcher Ribbon ────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-industrial-800 pb-3">
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-industrial-900/90 border border-industrial-800 w-full sm:w-auto overflow-x-auto">
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-industrial-900/90 border border-industrial-800 w-full sm:w-auto overflow-x-auto no-scrollbar">
           <button
             onClick={() => setActiveTab('PROJECTION_TWIN')}
-            className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
-              activeTab === 'PROJECTION_TWIN'
+            className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap shrink-0 ${activeTab === 'PROJECTION_TWIN'
                 ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30'
                 : 'text-industrial-400 hover:text-white hover:bg-industrial-800/50'
-            }`}
+              }`}
           >
             <Boxes className="h-4 w-4" />
             <span>Digital Twin Floor</span>
@@ -838,11 +835,10 @@ export const PlantsPage: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('SHIFT_FORECAST')}
-            className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
-              activeTab === 'SHIFT_FORECAST'
+            className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap shrink-0 ${activeTab === 'SHIFT_FORECAST'
                 ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30'
                 : 'text-industrial-400 hover:text-white hover:bg-industrial-800/50'
-            }`}
+              }`}
           >
             <TrendingUp className="h-4 w-4" />
             <span>Shift Projection Engine</span>
@@ -850,11 +846,10 @@ export const PlantsPage: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('LINES_CELLS')}
-            className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
-              activeTab === 'LINES_CELLS'
+            className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap shrink-0 ${activeTab === 'LINES_CELLS'
                 ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30'
                 : 'text-industrial-400 hover:text-white hover:bg-industrial-800/50'
-            }`}
+              }`}
           >
             <Layers className="h-4 w-4" />
             <span>Production Lines ({lines.length})</span>
@@ -862,11 +857,10 @@ export const PlantsPage: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('ENERGY_LOAD')}
-            className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
-              activeTab === 'ENERGY_LOAD'
+            className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap shrink-0 ${activeTab === 'ENERGY_LOAD'
                 ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30'
                 : 'text-industrial-400 hover:text-white hover:bg-industrial-800/50'
-            }`}
+              }`}
           >
             <Zap className="h-4 w-4" />
             <span>Power & Energy Load</span>
@@ -879,21 +873,19 @@ export const PlantsPage: React.FC = () => {
             <div className="flex items-center rounded-lg border border-industrial-800 bg-industrial-900 p-0.5 text-xs font-mono">
               <button
                 onClick={() => setProjectionPerspective('ISOMETRIC')}
-                className={`px-2.5 py-1 rounded-md transition-all ${
-                  projectionPerspective === 'ISOMETRIC'
+                className={`px-2.5 py-1 rounded-md transition-all ${projectionPerspective === 'ISOMETRIC'
                     ? 'bg-brand-600 text-white font-bold'
                     : 'text-industrial-400 hover:text-white'
-                }`}
+                  }`}
               >
                 2.5D Isometric
               </button>
               <button
                 onClick={() => setProjectionPerspective('SCHEMATIC')}
-                className={`px-2.5 py-1 rounded-md transition-all ${
-                  projectionPerspective === 'SCHEMATIC'
+                className={`px-2.5 py-1 rounded-md transition-all ${projectionPerspective === 'SCHEMATIC'
                     ? 'bg-brand-600 text-white font-bold'
                     : 'text-industrial-400 hover:text-white'
-                }`}
+                  }`}
               >
                 Flat Schematic
               </button>
@@ -934,9 +926,8 @@ export const PlantsPage: React.FC = () => {
 
           {/* Floor Schematic Canvas / 2.5D Grid */}
           <div
-            className={`rounded-2xl border border-industrial-800 bg-industrial-950/90 p-5 md:p-6 shadow-2xl relative overflow-hidden transition-all ${
-              projectionPerspective === 'ISOMETRIC' ? 'perspective-container' : ''
-            }`}
+            className={`rounded-2xl border border-industrial-800 bg-industrial-950/90 p-5 md:p-6 shadow-2xl relative overflow-hidden transition-all ${projectionPerspective === 'ISOMETRIC' ? 'perspective-container' : ''
+              }`}
             style={{
               backgroundImage:
                 'radial-gradient(rgba(99, 102, 241, 0.07) 1px, transparent 1px), radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px)',
@@ -982,13 +973,11 @@ export const PlantsPage: React.FC = () => {
                   <div
                     key={zone.id}
                     onClick={() => setInspectedZone(isInspected ? null : zone.id)}
-                    className={`rounded-2xl border p-4 transition-all duration-300 flex flex-col justify-between min-h-[360px] ${
-                      zone.color
-                    } ${
-                      isInspected
+                    className={`rounded-2xl border p-4 transition-all duration-300 flex flex-col justify-between min-h-[360px] ${zone.color
+                      } ${isInspected
                         ? 'ring-2 ring-brand-500 shadow-xl'
                         : 'hover:border-industrial-700 bg-industrial-900/60'
-                    }`}
+                      }`}
                   >
                     {/* Zone Header */}
                     <div>
@@ -1034,13 +1023,12 @@ export const PlantsPage: React.FC = () => {
                                 <div className="min-w-0">
                                   <div className="flex items-center gap-1.5">
                                     <span
-                                      className={`h-2 w-2 rounded-full shrink-0 ${
-                                        isRunning
+                                      className={`h-2 w-2 rounded-full shrink-0 ${isRunning
                                           ? 'bg-emerald-400 shadow-[0_0_8px_#34d399]'
                                           : isFaulted
-                                          ? 'bg-rose-500 shadow-[0_0_8px_#f43f5e] animate-ping'
-                                          : 'bg-amber-400'
-                                      }`}
+                                            ? 'bg-rose-500 shadow-[0_0_8px_#f43f5e] animate-ping'
+                                            : 'bg-amber-400'
+                                        }`}
                                     />
                                     <span className="font-mono text-[10px] font-bold text-brand-400 truncate">
                                       {m.assetId}
@@ -1358,9 +1346,8 @@ export const PlantsPage: React.FC = () => {
                         </div>
                         <div className="h-2 rounded-full bg-industrial-950 overflow-hidden border border-industrial-800">
                           <div
-                            className={`h-full rounded-full transition-all duration-700 ${
-                              pacingPercent >= 80 ? 'bg-emerald-400' : 'bg-amber-400'
-                            }`}
+                            className={`h-full rounded-full transition-all duration-700 ${pacingPercent >= 80 ? 'bg-emerald-400' : 'bg-amber-400'
+                              }`}
                             style={{ width: `${pacingPercent}%` }}
                           />
                         </div>
@@ -1395,13 +1382,12 @@ export const PlantsPage: React.FC = () => {
                               </span>
                             </div>
                             <span
-                              className={`h-2 w-2 rounded-full shrink-0 ${
-                                m.liveState === MachineState.RUNNING
+                              className={`h-2 w-2 rounded-full shrink-0 ${m.liveState === MachineState.RUNNING
                                   ? 'bg-emerald-400'
                                   : m.liveState === MachineState.FAULTED
-                                  ? 'bg-rose-500'
-                                  : 'bg-amber-400'
-                              }`}
+                                    ? 'bg-rose-500'
+                                    : 'bg-amber-400'
+                                }`}
                             />
                           </div>
                         ))}

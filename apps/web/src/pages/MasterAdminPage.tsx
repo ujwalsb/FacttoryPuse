@@ -265,8 +265,8 @@ export const MasterAdminPage: React.FC = () => {
           </span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs font-mono">
+        <div className="overflow-x-auto table-scroll-container">
+          <table className="w-full min-w-[750px] text-left text-xs font-mono">
             <thead className="border-b border-industrial-800 bg-industrial-950/60 text-industrial-400 uppercase tracking-wider">
               <tr>
                 <th className="py-3 px-4">Company Name</th>
@@ -291,10 +291,10 @@ export const MasterAdminPage: React.FC = () => {
                   <td className="py-3.5 px-4 font-semibold text-brand-400">{t.code}</td>
                   <td className="py-3.5 px-4">
                     <span className={`px-2.5 py-0.5 rounded-full border text-[10px] font-bold ${t.plan === 'ENTERPRISE'
-                        ? 'border-purple-500/40 bg-purple-950/50 text-purple-300'
-                        : t.plan === 'PROFESSIONAL'
-                          ? 'border-brand-500/40 bg-brand-950/50 text-brand-300'
-                          : 'border-industrial-700 bg-industrial-800 text-industrial-300'
+                      ? 'border-purple-500/40 bg-purple-950/50 text-purple-300'
+                      : t.plan === 'PROFESSIONAL'
+                        ? 'border-brand-500/40 bg-brand-950/50 text-brand-300'
+                        : 'border-industrial-700 bg-industrial-800 text-industrial-300'
                       }`}>
                       {t.plan}
                     </span>
@@ -337,8 +337,8 @@ export const MasterAdminPage: React.FC = () => {
                   <td className="py-3.5 px-4">
                     <span
                       className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${t.status === 'ACTIVE'
-                          ? 'border border-emerald-500/40 bg-emerald-950/60 text-emerald-400'
-                          : 'border border-rose-500/40 bg-rose-950/60 text-rose-400'
+                        ? 'border border-emerald-500/40 bg-emerald-950/60 text-emerald-400'
+                        : 'border border-rose-500/40 bg-rose-950/60 text-rose-400'
                         }`}
                     >
                       <span className={`w-1.5 h-1.5 rounded-full ${t.status === 'ACTIVE' ? 'bg-emerald-400' : 'bg-rose-400'}`} />
@@ -359,8 +359,8 @@ export const MasterAdminPage: React.FC = () => {
                       <button
                         onClick={() => handleToggleStatus(t._id, t.status)}
                         className={`rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition-all ${t.status === 'ACTIVE'
-                            ? 'border-amber-500/30 text-amber-400 hover:bg-amber-950/40'
-                            : 'border-emerald-500/30 text-emerald-400 hover:bg-emerald-950/40'
+                          ? 'border-amber-500/30 text-amber-400 hover:bg-amber-950/40'
+                          : 'border-emerald-500/30 text-emerald-400 hover:bg-emerald-950/40'
                           }`}
                       >
                         {t.status === 'ACTIVE' ? 'Suspend' : 'Activate'}

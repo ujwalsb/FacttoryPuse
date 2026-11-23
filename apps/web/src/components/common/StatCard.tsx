@@ -58,36 +58,35 @@ export const StatCard: React.FC<StatCardProps> = ({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-xl border ${variantStyles.border} bg-industrial-900/70 p-4 sm:p-5 backdrop-blur-sm transition-all duration-200 ${variantStyles.glow} shadow-lg`}
+      className={`relative overflow-hidden rounded-xl border ${variantStyles.border} bg-industrial-900/70 p-3 sm:p-5 backdrop-blur-sm transition-all duration-200 ${variantStyles.glow} shadow-lg`}
     >
-      <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wider text-industrial-400">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-industrial-400 line-clamp-1">
           {title}
         </p>
-        <div className={`rounded-lg p-2.5 ${variantStyles.iconBg}`}>
-          <Icon className="h-5 w-5" />
+        <div className={`rounded-lg p-2 sm:p-2.5 shrink-0 ${variantStyles.iconBg}`}>
+          <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
         </div>
       </div>
 
-      <div className="mt-3 flex items-baseline gap-1.5">
-        <span className="font-mono text-2xl font-bold tracking-tight text-white lg:text-3xl">
+      <div className="mt-2 sm:mt-3 flex items-baseline gap-1.5 flex-wrap">
+        <span className="font-mono text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-white">
           {value}
         </span>
         {unit && (
-          <span className="font-mono text-xs font-medium text-industrial-400">
+          <span className="font-mono text-[11px] sm:text-xs font-medium text-industrial-400">
             {unit}
           </span>
         )}
       </div>
 
       {(subValue || trend) && (
-        <div className="mt-2 flex items-center justify-between text-xs text-industrial-400">
-          {subValue && <span>{subValue}</span>}
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-1 text-[10px] sm:text-xs text-industrial-400">
+          {subValue && <span className="line-clamp-1">{subValue}</span>}
           {trend && (
             <span
-              className={`font-mono font-medium ${
-                trend.isPositive ? 'text-emerald-400' : 'text-rose-400'
-              }`}
+              className={`font-mono font-medium shrink-0 ${trend.isPositive ? 'text-emerald-400' : 'text-rose-400'
+                }`}
             >
               {trend.isPositive ? '↑' : '↓'} {trend.value}
             </span>

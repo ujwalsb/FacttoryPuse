@@ -54,7 +54,7 @@ export const Modal: React.FC<ModalProps> = ({
 
       {/* Modal Dialog */}
       <div
-        className={`relative w-full ${maxWidthClass} rounded-2xl border border-industrial-800 bg-industrial-900 p-4 sm:p-6 shadow-2xl transition-all z-10 max-h-[92dvh] sm:max-h-[90vh] overflow-y-auto`}
+        className={`relative w-full ${maxWidthClass} rounded-2xl border border-industrial-800 bg-industrial-900 p-3.5 sm:p-6 shadow-2xl transition-all z-10 max-h-[90dvh] sm:max-h-[90vh] overflow-y-auto overscroll-contain safe-area-bottom`}
       >
         <div className="flex items-start justify-between border-b border-industrial-800 pb-3 sm:pb-4 mb-3 sm:mb-4 gap-2">
           <div className="min-w-0 flex-1">
@@ -66,7 +66,7 @@ export const Modal: React.FC<ModalProps> = ({
           <button
             onClick={onClose}
             aria-label="Close modal"
-            className="rounded-lg p-2 min-w-[36px] min-h-[36px] flex items-center justify-center text-industrial-400 hover:bg-industrial-800 hover:text-white transition-colors shrink-0"
+            className="rounded-lg p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-industrial-400 hover:bg-industrial-800 hover:text-white transition-colors shrink-0 active:scale-95"
           >
             <X className="h-5 w-5" />
           </button>
