@@ -55,41 +55,41 @@ const MAC_OUI_DATABASE: Array<{
   protocol: IndustrialProtocol;
   port: number;
 }> = [
-  { prefix: '00:07:4F', vendor: 'Advantech Co., Ltd.', category: 'Industrial IoT Digital I/O Gateway', model: 'WISE-4051 IoT Wireless I/O Module', protocol: IndustrialProtocol.WISE_4051, port: 80 },
-  { prefix: '74:FE:48', vendor: 'Advantech Co., Ltd.', category: 'Industrial Embedded Controller', model: 'WISE-4051 Wireless I/O Node', protocol: IndustrialProtocol.WISE_4051, port: 80 },
-  { prefix: '00:D0:C9', vendor: 'Advantech Co., Ltd.', category: 'Industrial Automation Node', model: 'ADAM-6000 Series Ethernet I/O', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '00:90:E8', vendor: 'Moxa Inc.', category: 'Industrial Edge Gateway', model: 'Moxa UC-8200 Industrial IoT Gateway', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '00:02:D1', vendor: 'Moxa Inc.', category: 'Serial Device Server', model: 'Moxa NPort 5150A Device Server', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '00:1B:1B', vendor: 'Siemens AG', category: 'PLC Automation Controller', model: 'SIMATIC S7-1500 CPU 1516-3 PN/DP', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '00:0E:8C', vendor: 'Siemens AG', category: 'Compact PLC Controller', model: 'SIMATIC S7-1200 CPU 1214C', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '08:00:06', vendor: 'Siemens AG', category: 'Distributed I/O Station', model: 'SIMATIC ET 200SP Interface Module', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '00:1F:F8', vendor: 'Siemens AG', category: 'Industrial Ethernet Switch', model: 'SCALANCE XC208 Managed Switch', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '00:00:BC', vendor: 'Rockwell Automation', category: 'Industrial Control System', model: 'Allen-Bradley ControlLogix 5580', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '00:1D:9C', vendor: 'Rockwell Automation', category: 'Industrial Control System', model: 'Allen-Bradley CompactLogix 5380', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '00:08:74', vendor: 'Rockwell Automation', category: 'Micro PLC Controller', model: 'Allen-Bradley Micro850 Controller', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '00:80:F4', vendor: 'Schneider Electric', category: 'Programmable Automation Controller', model: 'Modicon M580 ePAC Controller', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '00:00:54', vendor: 'Schneider Electric', category: 'Industrial PLC Controller', model: 'Modicon M340 High-Perf PLC', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '00:25:BA', vendor: 'Schneider Electric', category: 'Smart Power Meter', model: 'PowerLogic PM8000 Series', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '00:01:05', vendor: 'Beckhoff Automation', category: 'IPC Controller', model: 'TwinCAT 3 CX5130 Embedded PC', protocol: IndustrialProtocol.OPC_UA, port: 4840 },
-  { prefix: '00:E0:4C', vendor: 'Fanuc Robotics', category: 'Robotic Welding Cell', model: 'M-20iD/25 Robotic TIG Cell', protocol: IndustrialProtocol.MQTT, port: 1883 },
-  { prefix: '00:00:70', vendor: 'Mitsubishi Electric', category: 'PLC Controller', model: 'MELSEC iQ-R Series PLC', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '00:00:0A', vendor: 'Omron Corporation', category: 'Machine Automation Controller', model: 'Sysmac NJ501 Industrial CPU', protocol: IndustrialProtocol.OPC_UA, port: 4840 },
-  { prefix: '00:30:DE', vendor: 'WAGO Kontakttechnik', category: 'Fieldbus Controller', model: 'PFC200 Telecontrol Modbus Node', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '00:A0:45', vendor: 'Phoenix Contact', category: 'Industrial Controller', model: 'PLCnext Control AXC F 2152', protocol: IndustrialProtocol.OPC_UA, port: 4840 },
-  { prefix: '00:50:56', vendor: 'VMware Industrial OT', category: 'Virtual Edge Gateway', model: 'vSphere ESXi OT Edge Appliance', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '00:0C:29', vendor: 'VMware Industrial OT', category: 'Virtual Edge Gateway', model: 'Workstation Industrial VM Node', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '18:47:3D', vendor: 'Intel Industrial Network', category: 'Industrial IPC Edge', model: 'Intel NUC Industrial Field Host', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '6C:02:E0', vendor: 'Intel Industrial Network', category: 'Industrial IPC Edge', model: 'Factory Floor Host NIC', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: 'C2:25:2F', vendor: 'Industrial Connected Node', category: 'Connected OT Sensor', model: 'IoT Smart Edge Node', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: 'C0:25:2F', vendor: 'Industrial Connected Node', category: 'Connected OT Sensor', model: 'IoT Smart Edge Node', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: 'F2:17:E6', vendor: 'Industrial OT Gateway', category: 'Plant Network Switch', model: 'Managed OT Subnet Gateway', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: 'B8:27:EB', vendor: 'Raspberry Pi Foundation', category: 'Edge IoT Gateway', model: 'Compute Module 4 Modbus Edge', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: 'DC:A6:32', vendor: 'Raspberry Pi Foundation', category: 'Edge IoT Gateway', model: 'Raspberry Pi 4 OT Poller', protocol: IndustrialProtocol.MQTT, port: 1883 },
-  { prefix: 'E4:5F:01', vendor: 'Raspberry Pi Foundation', category: 'Edge IoT Gateway', model: 'Raspberry Pi 4 Industrial Node', protocol: IndustrialProtocol.MQTT, port: 1883 },
-  { prefix: '4A:29:13', vendor: 'Industrial Network Gateway', category: 'OT Subnet Router', model: 'Managed Industrial Gateway Hub', protocol: IndustrialProtocol.MODBUS_TCP, port: 53 },
-  { prefix: '4A:8B:D9', vendor: 'Connected OT Device', category: 'Smart Factory Sensor', model: 'Wireless IoT Field Station', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
-  { prefix: '5C:D0:6E', vendor: 'Industrial Connected Device', category: 'Connected Machine Node', model: 'OT Floor Connected Terminal', protocol: IndustrialProtocol.MODBUS_TCP, port: 80 }
-];
+    { prefix: '00:07:4F', vendor: 'Advantech Co., Ltd.', category: 'Industrial IoT Digital I/O Gateway', model: 'WISE-4051 IoT Wireless I/O Module', protocol: IndustrialProtocol.WISE_4051, port: 80 },
+    { prefix: '74:FE:48', vendor: 'Advantech Co., Ltd.', category: 'Industrial Embedded Controller', model: 'WISE-4051 Wireless I/O Node', protocol: IndustrialProtocol.WISE_4051, port: 80 },
+    { prefix: '00:D0:C9', vendor: 'Advantech Co., Ltd.', category: 'Industrial Automation Node', model: 'ADAM-6000 Series Ethernet I/O', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '00:90:E8', vendor: 'Moxa Inc.', category: 'Industrial Edge Gateway', model: 'Moxa UC-8200 Industrial IoT Gateway', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '00:02:D1', vendor: 'Moxa Inc.', category: 'Serial Device Server', model: 'Moxa NPort 5150A Device Server', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '00:1B:1B', vendor: 'Siemens AG', category: 'PLC Automation Controller', model: 'SIMATIC S7-1500 CPU 1516-3 PN/DP', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '00:0E:8C', vendor: 'Siemens AG', category: 'Compact PLC Controller', model: 'SIMATIC S7-1200 CPU 1214C', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '08:00:06', vendor: 'Siemens AG', category: 'Distributed I/O Station', model: 'SIMATIC ET 200SP Interface Module', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '00:1F:F8', vendor: 'Siemens AG', category: 'Industrial Ethernet Switch', model: 'SCALANCE XC208 Managed Switch', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '00:00:BC', vendor: 'Rockwell Automation', category: 'Industrial Control System', model: 'Allen-Bradley ControlLogix 5580', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '00:1D:9C', vendor: 'Rockwell Automation', category: 'Industrial Control System', model: 'Allen-Bradley CompactLogix 5380', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '00:08:74', vendor: 'Rockwell Automation', category: 'Micro PLC Controller', model: 'Allen-Bradley Micro850 Controller', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '00:80:F4', vendor: 'Schneider Electric', category: 'Programmable Automation Controller', model: 'Modicon M580 ePAC Controller', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '00:00:54', vendor: 'Schneider Electric', category: 'Industrial PLC Controller', model: 'Modicon M340 High-Perf PLC', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '00:25:BA', vendor: 'Schneider Electric', category: 'Smart Power Meter', model: 'PowerLogic PM8000 Series', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '00:01:05', vendor: 'Beckhoff Automation', category: 'IPC Controller', model: 'TwinCAT 3 CX5130 Embedded PC', protocol: IndustrialProtocol.OPC_UA, port: 4840 },
+    { prefix: '00:E0:4C', vendor: 'Fanuc Robotics', category: 'Robotic Welding Cell', model: 'M-20iD/25 Robotic TIG Cell', protocol: IndustrialProtocol.MQTT, port: 1883 },
+    { prefix: '00:00:70', vendor: 'Mitsubishi Electric', category: 'PLC Controller', model: 'MELSEC iQ-R Series PLC', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '00:00:0A', vendor: 'Omron Corporation', category: 'Machine Automation Controller', model: 'Sysmac NJ501 Industrial CPU', protocol: IndustrialProtocol.OPC_UA, port: 4840 },
+    { prefix: '00:30:DE', vendor: 'WAGO Kontakttechnik', category: 'Fieldbus Controller', model: 'PFC200 Telecontrol Modbus Node', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '00:A0:45', vendor: 'Phoenix Contact', category: 'Industrial Controller', model: 'PLCnext Control AXC F 2152', protocol: IndustrialProtocol.OPC_UA, port: 4840 },
+    { prefix: '00:50:56', vendor: 'VMware Industrial OT', category: 'Virtual Edge Gateway', model: 'vSphere ESXi OT Edge Appliance', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '00:0C:29', vendor: 'VMware Industrial OT', category: 'Virtual Edge Gateway', model: 'Workstation Industrial VM Node', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '18:47:3D', vendor: 'Intel Industrial Network', category: 'Industrial IPC Edge', model: 'Intel NUC Industrial Field Host', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '6C:02:E0', vendor: 'Intel Industrial Network', category: 'Industrial IPC Edge', model: 'Factory Floor Host NIC', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: 'C2:25:2F', vendor: 'Industrial Connected Node', category: 'Connected OT Sensor', model: 'IoT Smart Edge Node', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: 'C0:25:2F', vendor: 'Industrial Connected Node', category: 'Connected OT Sensor', model: 'IoT Smart Edge Node', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: 'F2:17:E6', vendor: 'Industrial OT Gateway', category: 'Plant Network Switch', model: 'Managed OT Subnet Gateway', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: 'B8:27:EB', vendor: 'Raspberry Pi Foundation', category: 'Edge IoT Gateway', model: 'Compute Module 4 Modbus Edge', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: 'DC:A6:32', vendor: 'Raspberry Pi Foundation', category: 'Edge IoT Gateway', model: 'Raspberry Pi 4 OT Poller', protocol: IndustrialProtocol.MQTT, port: 1883 },
+    { prefix: 'E4:5F:01', vendor: 'Raspberry Pi Foundation', category: 'Edge IoT Gateway', model: 'Raspberry Pi 4 Industrial Node', protocol: IndustrialProtocol.MQTT, port: 1883 },
+    { prefix: '4A:29:13', vendor: 'Industrial Network Gateway', category: 'OT Subnet Router', model: 'Managed Industrial Gateway Hub', protocol: IndustrialProtocol.MODBUS_TCP, port: 53 },
+    { prefix: '4A:8B:D9', vendor: 'Connected OT Device', category: 'Smart Factory Sensor', model: 'Wireless IoT Field Station', protocol: IndustrialProtocol.MODBUS_TCP, port: 502 },
+    { prefix: '5C:D0:6E', vendor: 'Industrial Connected Device', category: 'Connected Machine Node', model: 'OT Floor Connected Terminal', protocol: IndustrialProtocol.MODBUS_TCP, port: 80 }
+  ];
 
 export class NetworkDiscoveryService {
   /**
@@ -111,8 +111,8 @@ export class NetworkDiscoveryService {
 
           // Primary heuristic: Wi-Fi or Ethernet or non-VMware usually represents primary plant/office LAN
           const isPrimary = !name.toLowerCase().includes('vmnet') &&
-                            !name.toLowerCase().includes('loopback') &&
-                            (name.toLowerCase().includes('wi-fi') || name.toLowerCase().includes('ethernet'));
+            !name.toLowerCase().includes('loopback') &&
+            (name.toLowerCase().includes('wi-fi') || name.toLowerCase().includes('ethernet'));
 
           result.push({
             name,
@@ -270,7 +270,7 @@ export class NetworkDiscoveryService {
                 aliveIps.push(ip);
                 return;
               }
-            } catch {}
+            } catch { }
 
             // Fast TCP socket fallback check
             const tcpCheck = await this.testPort(ip, 80, timeoutMs);
