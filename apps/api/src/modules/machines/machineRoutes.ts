@@ -31,20 +31,38 @@ router.post(
 );
 
 router.get(
-  '/discovery/devices',
-  authorizeRoles(UserRole.MASTER_ADMIN, UserRole.COMPANY_ADMIN, UserRole.PLANT_IT_HEAD),
+  ['/discovery/devices', '/devices-discovered'],
+  authorizeRoles(
+    UserRole.MASTER_ADMIN,
+    UserRole.COMPANY_ADMIN,
+    UserRole.PLANT_IT_HEAD,
+    UserRole.PRODUCTION_MANAGER,
+    UserRole.MAINTENANCE_ENGINEER
+  ),
   MachineController.getDiscoveredDevices
 );
 
 router.get(
-  '/discovery/interfaces',
-  authorizeRoles(UserRole.MASTER_ADMIN, UserRole.COMPANY_ADMIN, UserRole.PLANT_IT_HEAD),
+  ['/discovery/interfaces', '/network-interfaces'],
+  authorizeRoles(
+    UserRole.MASTER_ADMIN,
+    UserRole.COMPANY_ADMIN,
+    UserRole.PLANT_IT_HEAD,
+    UserRole.PRODUCTION_MANAGER,
+    UserRole.MAINTENANCE_ENGINEER
+  ),
   MachineController.getNetworkInterfaces
 );
 
 router.post(
-  '/discovery/probe',
-  authorizeRoles(UserRole.MASTER_ADMIN, UserRole.COMPANY_ADMIN, UserRole.PLANT_IT_HEAD),
+  ['/discovery/probe', '/check-device', '/test-connection'],
+  authorizeRoles(
+    UserRole.MASTER_ADMIN,
+    UserRole.COMPANY_ADMIN,
+    UserRole.PLANT_IT_HEAD,
+    UserRole.PRODUCTION_MANAGER,
+    UserRole.MAINTENANCE_ENGINEER
+  ),
   MachineController.probeDevice
 );
 

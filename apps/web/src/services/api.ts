@@ -64,7 +64,22 @@ class ApiClient {
     try {
       data = text ? JSON.parse(text) : {};
     } catch {
-      data = { error: text || `HTTP ${response.status}: ${response.statusText}` };
+      let cleanMsg = `HTTP ${response.status}: ${response.statusText || 'Request failed'}`;
+      if (text) {
+        // Strip HTML if server or proxy returned an HTML error page (e.g. 403 Forbidden / 502 Bad Gateway)
+        if (text.includes('<html') || text.includes('<!DOCTYPE') || text.trim().startsWith('<')) {
+          const title = (text.match(/<title>([^<]+)<\/title>/i) || [])[1];
+          const h1 = (text.match(/<h1[^>]*>([^<]+)<\/h1>/i) || [])[1];
+          const h2 = (text.match(/<h2[^>]*>([^<]+)<\/h2>/i) || [])[1];
+          const p = (text.match(/<p[^>]*>([^<]+)<\/p>/i) || [])[1];
+          const desc = h2 || h1 || title || 'Error';
+          const detail = p ? ` - ${p.trim()}` : '';
+          cleanMsg = `HTTP ${response.status} (${desc.trim()})${detail}`;
+        } else {
+          cleanMsg = text.slice(0, 300).trim();
+        }
+      }
+      data = { error: cleanMsg };
     }
 
     // If server is 503 (backend initializing or restarting), transparently retry before failing
@@ -242,8 +257,15 @@ class ApiClient {
     return this.request('/machines/discovery/interfaces');
   }
 
-  probeDevice(body: { ipAddress: string; port?: number; protocol?: string }) {
-    return this.request('/machines/discovery/probe', { method: 'POST', body: JSON.stringify(body) });
+  async probeDevice(body: { ipAddress: string; port?: number; protocol?: string }) {
+    try {
+      return await this.request('/machines/check-device', { method: 'POST', body: JSON.stringify(body) });
+    } catch (err: any) {
+      if (err.status === 404) {
+        return await this.request('/machines/discovery/probe', { method: 'POST', body: JSON.stringify(body) });
+      }
+      throw err;
+    }
   }
 
   toggleSimulator(isSimulated?: boolean) {

@@ -851,7 +851,28 @@ export const MachinesPage: React.FC = () => {
                   <AlertCircle className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" />
                   <span className="leading-relaxed">{probeError}</span>
                 </div>
-                {/^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(newMachine.ipAddress.trim()) && (
+                {(probeError.includes('403') || probeError.toLowerCase().includes('forbidden')) && (
+                  <div className="p-3 rounded-lg border border-amber-500/30 bg-amber-950/20 text-amber-200 text-xs font-mono space-y-1.5">
+                    <div className="font-bold text-amber-400 flex items-center gap-1.5">
+                      <Shield className="h-3.5 w-3.5 text-amber-400" />
+                      Host Firewall / WAF Interception (403 Forbidden)
+                    </div>
+                    <p className="text-[11px] text-industrial-300 leading-relaxed">
+                      Your hosting server or Web Application Firewall (WAF) blocked the raw socket probe. Probing is optional — you can register and monitor your machine asset directly!
+                    </p>
+                    <div className="pt-1">
+                      <button
+                        type="button"
+                        onClick={handleAutoFillWise4051}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold font-mono transition-all"
+                      >
+                        <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+                        Click to Auto-Fill WISE-4051 Profile &amp; Register Below
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {/^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(newMachine.ipAddress.trim()) && !probeError.includes('403') && (
                   <div className="p-3 rounded-lg border border-amber-500/30 bg-amber-950/20 text-amber-200 text-xs font-mono space-y-1.5">
                     <div className="font-bold text-amber-400 flex items-center gap-1.5">
                       <Radio className="h-3.5 w-3.5 text-amber-400" />
