@@ -428,6 +428,11 @@ export class MachineController {
       }
 
       if (!handshakeVerified) {
+        const isPrivateIp = /^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(ipAddress.trim());
+        const privateIpNote = isPrivateIp
+          ? ' [Note: Target is an RFC-1918 private LAN IP. If FactoryPulse is running on a cloud server or remote VPS, cloud servers cannot directly route to local on-premise hardware without an Edge Gateway, VPN tunnel (Tailscale/Cloudflare), or outbound MQTT/REST push].'
+          : '';
+
         res.status(200).json({
           success: false,
           reachable: false,
@@ -435,7 +440,8 @@ export class MachineController {
           pingStatus: 'UNREACHABLE',
           latencyMs: 0,
           openPorts: [],
-          error: `Device at ${ipAddress.trim()}:${effectivePort} is unreachable. No socket handshake response on port ${effectivePort} or ICMP ping reply.`
+          isPrivateIp,
+          error: `Device at ${ipAddress.trim()}:${effectivePort} is unreachable. No socket handshake response on port ${effectivePort} or ICMP ping reply.${privateIpNote}`
         });
         return;
       }
@@ -443,7 +449,8 @@ export class MachineController {
       // Resolve hardware identifiers using real MAC / IP resolution
       const arpList = await NetworkDiscoveryService.getArpEntries();
       const arpMatch = arpList.find(a => a.ip === ipAddress.trim());
-      const macAddress = arpMatch ? arpMatch.mac : `00:1B:1B:${(parseInt(ipParts[3], 10) % 256).toString(16).padStart(2, '0').toUpperCase()}:A9:12`;
+      const lastOctet = ipParts.length >= 4 ? parseInt(ipParts[3], 10) : 10;
+      const macAddress = arpMatch ? arpMatch.mac : `00:1B:1B:${((isNaN(lastOctet) ? 10 : lastOctet) % 256).toString(16).padStart(2, '0').toUpperCase()}:A9:12`;
 
       const info = NetworkDiscoveryService.resolveDeviceInfo(
         macAddress,

@@ -12,7 +12,7 @@ import {
   Cpu, Plus, Search, Play, RotateCcw, Loader2, Radio, Wifi, Network,
   RefreshCw, CheckCircle2, AlertCircle, Zap, Sliders, Pencil, Trash2,
   Server, Signal, Activity, AlertTriangle, Power, BarChart3, ChevronRight,
-  WifiOff, Eye, Boxes, UserCheck, Wrench, Shield
+  WifiOff, Eye, Boxes, UserCheck, Wrench, Shield, Sparkles
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -265,6 +265,27 @@ export const MachinesPage: React.FC = () => {
     }
   };
 
+  const handleAutoFillWise4051 = () => {
+    const randomSuffix = Math.floor(100 + Math.random() * 900);
+    setNewMachine(prev => ({
+      ...prev,
+      protocol: IndustrialProtocol.WISE_4051,
+      port: 80,
+      assetId: prev.assetId || `WISE-4051-${randomSuffix}`,
+      name: prev.name || 'Advantech WISE-4051 IoT Wireless I/O',
+      category: 'Industrial IoT Digital I/O Gateway',
+      manufacturer: 'Advantech Co., Ltd.',
+      modelNumber: 'WISE-4051',
+      serialNumber: prev.serialNumber || `SN-W4051-${randomSuffix}`,
+      expectedCycleTimeSeconds: 10,
+      plannedCapacityPerHour: 360,
+      isMonitored: true,
+      isSimulated: false
+    }));
+    setNewMachineDis(getDefaultDigitalInputConfigs());
+    setProbeError(null);
+  };
+
   const handleClaimDevice = (device: any) => {
     setIsDiscoveryModalOpen(false); setProbeResult(device); setProbeError(null);
     const assetIdGen = `DEV-${device.vendor.split(' ')[0].toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
@@ -391,8 +412,8 @@ export const MachinesPage: React.FC = () => {
                 type="button"
                 onClick={() => setOnlyAssigned(false)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${!onlyAssigned
-                    ? 'bg-amber-500 text-black shadow-md'
-                    : 'bg-industrial-900 border border-industrial-800 text-industrial-400 hover:text-white'
+                  ? 'bg-amber-500 text-black shadow-md'
+                  : 'bg-industrial-900 border border-industrial-800 text-industrial-400 hover:text-white'
                   }`}
               >
                 All Fleet ({enrichedMachines.length})
@@ -401,8 +422,8 @@ export const MachinesPage: React.FC = () => {
                 type="button"
                 onClick={() => setOnlyAssigned(true)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${onlyAssigned
-                    ? 'bg-amber-500 text-black shadow-md'
-                    : 'bg-industrial-900 border border-industrial-800 text-industrial-400 hover:text-white'
+                  ? 'bg-amber-500 text-black shadow-md'
+                  : 'bg-industrial-900 border border-industrial-800 text-industrial-400 hover:text-white'
                   }`}
               >
                 My Cell ({assignedMachineIds.length})
@@ -702,11 +723,10 @@ export const MachinesPage: React.FC = () => {
               </div>
             </div>
             {directProbeFeedback && (
-              <div className={`text-[11px] p-2 rounded-lg border flex items-center gap-1.5 font-mono ${
-                directProbeFeedback.type === 'success'
-                  ? 'text-emerald-400 bg-emerald-950/40 border-emerald-500/30'
-                  : 'text-rose-400 bg-rose-950/40 border-rose-500/30'
-              }`}>
+              <div className={`text-[11px] p-2 rounded-lg border flex items-center gap-1.5 font-mono ${directProbeFeedback.type === 'success'
+                ? 'text-emerald-400 bg-emerald-950/40 border-emerald-500/30'
+                : 'text-rose-400 bg-rose-950/40 border-rose-500/30'
+                }`}>
                 {directProbeFeedback.type === 'success' ? (
                   <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
                 ) : (
@@ -782,7 +802,17 @@ export const MachinesPage: React.FC = () => {
               <span className="text-[10px] font-mono text-industrial-400">PLC Socket Handshake</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-              <div className="sm:col-span-1"><label className={lCls}>IPv4 Address</label><input type="text" required value={newMachine.ipAddress} onChange={e => setNewMachine({ ...newMachine, ipAddress: e.target.value })} placeholder="192.168.10.25" className={iCls} /></div>
+              <div className="sm:col-span-1">
+                <label className={lCls}>IPv4 / Hostname / Tunnel</label>
+                <input
+                  type="text"
+                  required
+                  value={newMachine.ipAddress}
+                  onChange={e => setNewMachine({ ...newMachine, ipAddress: e.target.value })}
+                  placeholder="192.168.1.11 or edge.plant.local"
+                  className={iCls}
+                />
+              </div>
               <div><label className={lCls}>Port</label><input type="number" required value={newMachine.port} onChange={e => setNewMachine({ ...newMachine, port: parseInt(e.target.value, 10) || 502 })} className={iCls} /></div>
               <div>
                 <label className={lCls}>Protocol</label>
@@ -794,11 +824,19 @@ export const MachinesPage: React.FC = () => {
                 </select>
               </div>
             </div>
-            <div className="flex items-center justify-between pt-1">
-              <button type="button" onClick={handleProbeIp} disabled={isProbing} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand-500/40 bg-brand-600/20 text-brand-300 hover:bg-brand-600/30 text-xs font-mono font-semibold transition-all disabled:opacity-50">
-                {isProbing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Zap className="h-3.5 w-3.5 text-brand-400" />}
-                {isProbing ? 'Probing Device IP...' : 'Probe IP & Auto-Detect Hardware'}
-              </button>
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <button type="button" onClick={handleProbeIp} disabled={isProbing} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand-500/40 bg-brand-600/20 text-brand-300 hover:bg-brand-600/30 text-xs font-mono font-semibold transition-all disabled:opacity-50">
+                  {isProbing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Zap className="h-3.5 w-3.5 text-brand-400" />}
+                  {isProbing ? 'Probing Device IP...' : 'Probe IP & Auto-Detect Hardware'}
+                </button>
+                {newMachine.protocol === IndustrialProtocol.WISE_4051 && (
+                  <button type="button" onClick={handleAutoFillWise4051} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-industrial-700 bg-industrial-900 text-industrial-300 hover:text-white hover:border-industrial-600 text-xs font-mono transition-all">
+                    <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                    Auto-Fill WISE-4051 Profile
+                  </button>
+                )}
+              </div>
               <span className="text-[10px] text-industrial-500 font-mono">Queries TCP port & interrogates PLC firmware</span>
             </div>
             {probeResult && (
@@ -808,8 +846,27 @@ export const MachinesPage: React.FC = () => {
               </div>
             )}
             {probeError && (
-              <div className="p-2.5 rounded-lg border border-rose-500/40 bg-rose-950/30 text-rose-300 text-xs font-mono flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-rose-400 shrink-0" /><span>{probeError}</span>
+              <div className="space-y-2">
+                <div className="p-2.5 rounded-lg border border-rose-500/40 bg-rose-950/30 text-rose-300 text-xs font-mono flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">{probeError}</span>
+                </div>
+                {/^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(newMachine.ipAddress.trim()) && (
+                  <div className="p-3 rounded-lg border border-amber-500/30 bg-amber-950/20 text-amber-200 text-xs font-mono space-y-1.5">
+                    <div className="font-bold text-amber-400 flex items-center gap-1.5">
+                      <Radio className="h-3.5 w-3.5 text-amber-400" />
+                      Cloud Deployment ➔ Private Local LAN Guidance
+                    </div>
+                    <p className="text-[11px] text-industrial-300 leading-relaxed">
+                      Your target IP <span className="text-white font-bold">{newMachine.ipAddress}</span> is on a local private subnet. Cloud servers cannot route directly across the public internet to private LAN devices without an Edge Gateway or tunnel.
+                    </p>
+                    <ul className="text-[11px] text-industrial-300 list-disc list-inside space-y-0.5 pl-1">
+                      <li><strong className="text-white">Option 1:</strong> Expose the device via Edge Gateway / VPN tunnel (e.g. Tailscale / Cloudflare Tunnel / Moxa) and enter its hostname in the field above.</li>
+                      <li><strong className="text-white">Option 2:</strong> In the WISE-4051 web portal, configure outbound MQTT / REST push directly to this cloud server.</li>
+                      <li><strong className="text-emerald-400">Ready to proceed:</strong> Click <strong className="text-white font-bold">&quot;Auto-Fill WISE-4051 Profile&quot;</strong> and <strong className="text-white font-bold">&quot;Register Machine Asset&quot;</strong> below to complete registration!</li>
+                    </ul>
+                  </div>
+                )}
               </div>
             )}
           </div>
